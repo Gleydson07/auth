@@ -1,0 +1,17 @@
+{
+  "name": "Nest Auth",
+  "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode-remote.remote-containers",
+        "Prisma.prisma",
+        "Postman.postman-for-vscode"
+      ],
+      "settings": {}
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {}
+  }
+}

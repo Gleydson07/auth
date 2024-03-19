@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar()
+  lastname  String   @db.VarChar()
+  nickname  String?  @unique @db.VarChar()
+  email     String   @unique() @db.VarChar()
+  password  String   @db.VarChar()
+  active    Boolean? @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Profile Profile?
+  Address Address[]
+}
+
+model Profile {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique @map("user_id")
+  birthDay         DateTime? @map("birth_day")
+  gender           String?   @db.VarChar()
+  mainRegistration String?   @db.VarChar()
+  avatarUrl        String?   @map("avatar_url") @db.VarChar()
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Address {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  neighborhood String   @db.VarChar()
+  street       String?  @db.VarChar()
+  number       String?  @db.VarChar()
+  city         String   @db.VarChar()
+  country      String   @db.VarChar()
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model BlackListTokens {
+  token           String   @id @db.VarChar()
+  revokedByUserId Int      @map("revoked_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+}
