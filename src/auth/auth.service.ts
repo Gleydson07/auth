@@ -39,8 +39,16 @@ export class AuthService {
     const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
 
     return {
-      accessToken: await this.generateToken(payload, tokenSecret, "15min"),
-      refreshToken: await this.generateToken(payload, refreshTokenSecret, "1d")
+      accessToken: await this.generateToken(
+        payload,
+        tokenSecret,
+        this.configService.get<string>("JWT_TOKEN_EXPIRES_IN")
+      ),
+      refreshToken: await this.generateToken(
+        payload,
+        refreshTokenSecret,
+        this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN")
+      )
     };
   }
 
@@ -50,21 +58,8 @@ export class AuthService {
         throw new UnauthorizedException('Token não encontrado.');
       }
 
-      const tokenDecoded = await this.jwtDecode(refreshToken);
-
-      if (!tokenDecoded) {
-        throw new UnauthorizedException('Token mal formado.');
-      }
-
-      const user = await this.usersService.findOneByEmailOrNickname(tokenDecoded?.email);
-
-      if (!user?.id) {
-        throw new UnauthorizedException('Usuário não encontrado.');
-      }
-
       const tokenSecret = this.configService.get<string>("JWT_SECRET");
       const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
-
       const oldPayload = await this.verifyJwtToken(refreshToken, refreshTokenSecret);
 
       const newPayload = {
@@ -74,8 +69,16 @@ export class AuthService {
       }
 
       return {
-        accessToken: await this.generateToken(newPayload, tokenSecret, "15min"),
-        refreshToken: await this.generateToken(newPayload, refreshTokenSecret, "1d")
+        accessToken: await this.generateToken(
+          newPayload,
+          tokenSecret,
+          this.configService.get<string>("JWT_TOKEN_EXPIRES_IN")
+        ),
+        refreshToken: await this.generateToken(
+          newPayload,
+          refreshTokenSecret,
+          this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN")
+        )
       };
     } catch (error) {
       throw error;
