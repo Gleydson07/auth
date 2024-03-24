@@ -20,6 +20,7 @@ model User {
 
   Profile Profile?
   Address Address[]
+  @@map("users")
 }
 
 model Profile {
@@ -33,6 +34,7 @@ model Profile {
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
+  @@map("profiles")
 }
 
 model Address {
@@ -47,6 +49,7 @@ model Address {
   updatedAt    DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
+  @@map("addresses")
 }
 
 model BlackListTokens {
@@ -54,4 +57,6 @@ model BlackListTokens {
   revokedByUserId Int      @map("revoked_by_user_id")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("black-list-tokens")
 }

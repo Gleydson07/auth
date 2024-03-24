@@ -37,9 +37,8 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token não encontrado');
     }
-
 
     const isRevoked = await this.blackListTokens.exists(token);
 

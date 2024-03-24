@@ -3,14 +3,12 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from "@/auth/guards/auth.guard";
-import { SkipAuth } from "@/utils/decorators/skip-auth.decorator";
 
 @UseGuards(AuthGuard)
 @Controller('')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @SkipAuth()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

@@ -37,17 +37,19 @@ export class AuthService {
 
     const tokenSecret = this.configService.get<string>("JWT_SECRET");
     const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
+    const tokenExpiresIn = this.configService.get<string>("JWT_TOKEN_EXPIRES_IN");
+    const refreshTokenExpiresIn = this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN");
 
     return {
       accessToken: await this.generateToken(
         payload,
         tokenSecret,
-        this.configService.get<string>("JWT_TOKEN_EXPIRES_IN")
+        tokenExpiresIn
       ),
       refreshToken: await this.generateToken(
         payload,
         refreshTokenSecret,
-        this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN")
+        refreshTokenExpiresIn
       )
     };
   }
@@ -60,24 +62,28 @@ export class AuthService {
 
       const tokenSecret = this.configService.get<string>("JWT_SECRET");
       const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
-      const oldPayload = await this.verifyJwtToken(refreshToken, refreshTokenSecret);
+      const tokenExpiresIn = this.configService.get<string>("JWT_TOKEN_EXPIRES_IN");
+      const refreshTokenExpiresIn = this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN");
 
+      const oldPayload = await this.verifyJwtToken(refreshToken, refreshTokenSecret);
       const newPayload = {
         sub: oldPayload.sub,
         username: oldPayload.username,
         email: oldPayload.email
       }
 
+      this.revokeToken(refreshToken, oldPayload);
+
       return {
         accessToken: await this.generateToken(
           newPayload,
           tokenSecret,
-          this.configService.get<string>("JWT_TOKEN_EXPIRES_IN")
+          tokenExpiresIn
         ),
         refreshToken: await this.generateToken(
           newPayload,
           refreshTokenSecret,
-          this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN")
+          refreshTokenExpiresIn
         )
       };
     } catch (error) {
