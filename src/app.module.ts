@@ -8,7 +8,6 @@ import { DatabaseModule } from "./database/database.module";
 import { ConfigModule } from "@nestjs/config";
 import { BlackListModule } from './auth/black-list/black-list.module';
 import { ProfilesModule } from './profiles/profiles.module';
-import { S3Module } from './s3/s3.module';
 import { MulterModule } from "@nestjs/platform-express";
 import { AddressesModule } from "./addresses/addresses.module";
 
@@ -22,10 +21,9 @@ export const prefix = 'ms-auth/api/v1'
     UsersModule,
     BlackListModule,
     ProfilesModule,
-    S3Module,
     MulterModule.register({
       limits: {
-        fileSize: 1024 * 1024 * 10, // 5MB limite de tamanho do arquivo
+        fileSize: 1024 * 1024 * 10, // 10MB limite de tamanho do arquivo
       },
     }),
     RouterModule.register([
