@@ -5,7 +5,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
-import { BlackListService } from "@/black-list/black-list.service";
+import { BlackListService } from "@/auth/black-list/black-list.service";
 
 @Injectable()
 export class AuthService {

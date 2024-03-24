@@ -25,7 +25,7 @@
         "src/auth/*"
       ],
       "@blacklist/*": [
-        "src/black-list/*"
+        "src/auth/black-list/*"
       ],
       "@database/*": [
         "src/database/*"

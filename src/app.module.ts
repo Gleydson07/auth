@@ -6,7 +6,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { DatabaseModule } from "./database/database.module";
 import { ConfigModule } from "@nestjs/config";
-import { BlackListModule } from './black-list/black-list.module';
+import { BlackListModule } from './auth/black-list/black-list.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { S3Module } from './s3/s3.module';
 import { MulterModule } from "@nestjs/platform-express";

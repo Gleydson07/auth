@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { ConfigModule } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { BlackListService } from "@/black-list/black-list.service";
+import { BlackListService } from "@/auth/black-list/black-list.service";
 
 @Module({
   imports: [ConfigModule],

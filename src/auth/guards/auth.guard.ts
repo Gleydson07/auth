@@ -12,7 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from "@nestjs/core";
 import { IS_PUBLIC_KEY } from "@/utils/decorators/skip-auth.decorator";
-import { BlackListService } from "@/black-list/black-list.service";
+import { BlackListService } from "@/auth/black-list/black-list.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
