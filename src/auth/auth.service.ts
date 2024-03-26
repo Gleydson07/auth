@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { SignInAuthDto } from "./dto/sign-in.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -17,41 +17,46 @@ export class AuthService {
   ) { }
 
   async signIn({ login, password: pass }: SignInAuthDto): Promise<any> {
-    const user = await this.usersService.findOneByEmailOrNickname(login);
+    try {
+      const user = await this.usersService.findOneByEmailOrNickname(login);
 
-    if (!user?.id) {
-      throw new UnauthorizedException('Usuário não autorizado.');
+      if (!user?.id) {
+        throw new UnauthorizedException('Usuário não autorizado.');
+      }
+
+      const isMatch = await bcrypt.compare(pass, user.password);
+
+      if (!isMatch) {
+        throw new UnauthorizedException('Usuário ou senha incorretos.');
+      }
+
+      const payload = {
+        sub: user.id,
+        username: `${user.name} ${user.lastname}`,
+        email: user.email
+      }
+
+      const tokenSecret = this.configService.get<string>("JWT_SECRET");
+      const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
+      const tokenExpiresIn = this.configService.get<string>("JWT_TOKEN_EXPIRES_IN");
+      const refreshTokenExpiresIn = this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN");
+
+      return {
+        accessToken: await this.generateToken(
+          payload,
+          tokenSecret,
+          tokenExpiresIn
+        ),
+        refreshToken: await this.generateToken(
+          payload,
+          refreshTokenSecret,
+          refreshTokenExpiresIn
+        )
+      };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException("Falha ao efetuar login!", HttpStatus.BAD_REQUEST);
     }
-
-    const isMatch = await bcrypt.compare(pass, user.password);
-
-    if (!isMatch) {
-      throw new UnauthorizedException('Usuário ou senha incorretos.');
-    }
-
-    const payload = {
-      sub: user.id,
-      username: `${user.name} ${user.lastname}`,
-      email: user.email
-    }
-
-    const tokenSecret = this.configService.get<string>("JWT_SECRET");
-    const refreshTokenSecret = this.configService.get<string>("JWT_SECRET_REFRESH");
-    const tokenExpiresIn = this.configService.get<string>("JWT_TOKEN_EXPIRES_IN");
-    const refreshTokenExpiresIn = this.configService.get<string>("JWT_REFRESH_TOKEN_EXPIRES_IN");
-
-    return {
-      accessToken: await this.generateToken(
-        payload,
-        tokenSecret,
-        tokenExpiresIn
-      ),
-      refreshToken: await this.generateToken(
-        payload,
-        refreshTokenSecret,
-        refreshTokenExpiresIn
-      )
-    };
   }
 
   async refresh(refreshToken: string): Promise<any> {
@@ -87,12 +92,16 @@ export class AuthService {
         )
       };
     } catch (error) {
-      throw error;
+      throw new HttpException("Falha ao gerar token!", HttpStatus.BAD_REQUEST);
     }
   }
 
   async revokeToken(token: string, user: UserFromToken): Promise<any> {
-    return this.blackListService.create({ token, revokedByUserId: user.sub })
+    try {
+      return this.blackListService.create({ token, revokedByUserId: user.sub })
+    } catch (error) {
+      throw new HttpException("Falha revogar token!", HttpStatus.BAD_REQUEST);
+    }
   }
 
   private async generateToken(payload: any, secret: string, expiresIn: string) {

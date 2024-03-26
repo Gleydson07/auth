@@ -26,4 +26,11 @@ export class AuthController {
   revokeToken(@Body('token') token: string, @User() user: UserFromToken) {
     return this.authService.revokeToken(token, user);
   }
+
+  @HttpCode(204)
+  @UseGuards(AuthGuard)
+  @Post('sign-out')
+  signOut(@Body('token') token: string, @User() user: UserFromToken) {
+    this.authService.revokeToken(token, user);
+  }
 }

@@ -48,9 +48,9 @@ export class UsersService {
     });
   }
 
-  findOneByEmailOrNickname(emailOrNickname: string, nickname?: string) {
+  async findOneByEmailOrNickname(emailOrNickname: string, nickname?: string) {
     try {
-      return this.prismaService.user.findFirst({
+      const data = await this.prismaService.user.findFirst({
         where: {
           OR: [
             { email: { equals: emailOrNickname } },
@@ -61,20 +61,21 @@ export class UsersService {
           }
         }
       });
+      return data;
     } catch (error) {
       throw new Error('Falha ao buscar usuário.')
     }
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prismaService.user.update({
+    this.prismaService.user.update({
       where: {
         id
       },
       data: {
         name: updateUserDto.name,
         lastname: updateUserDto.lastname
-      }
+      },
     });
   }
 
