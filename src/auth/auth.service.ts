@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
 import { BlackListService } from "@/auth/black-list/black-list.service";
+import { RoleEnum } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -77,7 +78,7 @@ export class AuthService {
         email: oldPayload.email
       }
 
-      this.revokeToken(refreshToken, oldPayload);
+      this.revokeToken(refreshToken, "refresh-token", oldPayload);
 
       return {
         accessToken: await this.generateToken(
@@ -96,12 +97,16 @@ export class AuthService {
     }
   }
 
-  async revokeToken(token: string, user: UserFromToken): Promise<any> {
+  async revokeToken(token: string, args: string, user: UserFromToken): Promise<any> {
     try {
-      return this.blackListService.create({ token, revokedByUserId: user.sub })
+      return this.blackListService.create({ token, args, revokedByUserId: user.sub })
     } catch (error) {
       throw new HttpException("Falha revogar token!", HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async signOut(token: string, args: string, user: UserFromToken): Promise<any> {
+    return await this.revokeToken(token, args, user);
   }
 
   private async generateToken(payload: any, secret: string, expiresIn: string) {

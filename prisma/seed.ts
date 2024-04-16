@@ -9,6 +9,7 @@ async function main() {
       lastname: 'Administrator',
       email: 'admin@admin.com',
       password: '$2b$12$qf/h360WYrevBdC5fVgXYuzx4O6MsysqEQ4e3yDYV5ZhfAAOIaJDq',
+      role: "ADMIN"
     },
   })
 }

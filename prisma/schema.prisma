@@ -14,6 +14,7 @@ model User {
   email     String   @unique() @db.VarChar()
   password  String   @db.VarChar()
   active    Boolean? @default(true)
+  role      RoleEnum @map("role") @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -53,8 +54,14 @@ model Address {
 model BlackListTokens {
   token           String   @id @db.VarChar()
   revokedByUserId Int      @map("revoked_by_user_id")
+  args            String   @db.VarChar(200)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("black-list-tokens")
+}
+
+enum RoleEnum {
+  USER
+  ADMIN
 }

@@ -3,6 +3,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from "@/database/Prisma/prisma.service";
+import { UserFromToken } from "@/auth/dto/token-payload.dto";
+import { RoleEnum } from "@prisma/client";
+import { CreateRoleDto } from "./dto/create-role.dto";
 
 const SALT = 12;
 
@@ -32,6 +35,37 @@ export class UsersService {
       const { password, active, ...response } = result;
 
       return response;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async changeRole(user: UserFromToken, data: CreateRoleDto) {
+    try {
+      const operator = await this.findOneById(user.sub);
+
+      if (!operator || operator && operator.role !== RoleEnum.ADMIN) {
+        throw new Error("Você não tem permissão de administrador.");
+      }
+
+      const userToUpdateRole = await this.findOneById(data.userId);
+
+      if (!userToUpdateRole) {
+        throw new Error("Usuário não encontrado.");
+      }
+
+      if (Number(user.sub) === Number(data.userId)) {
+        throw new Error("Você não pode alterar seu nível de acesso.");
+      }
+
+      await this.prismaService.user.update({
+        where: {
+          id: data.userId,
+        },
+        data: {
+          role: data.role
+        },
+      });
     } catch (error) {
       throw new BadRequestException(error.message);
     }

@@ -3,6 +3,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from "@/auth/guards/auth.guard";
+import { User } from "@/utils/decorators/user-extract-auth.decorator";
+import { UserFromToken } from "@/auth/dto/token-payload.dto";
+import { CreateRoleDto } from "./dto/create-role.dto";
 
 @UseGuards(AuthGuard)
 @Controller('')
@@ -12,6 +15,14 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post("roles")
+  createRole(
+    @Body() data: CreateRoleDto,
+    @User() user: UserFromToken
+  ) {
+    return this.usersService.changeRole(user, data);
   }
 
   @Get()

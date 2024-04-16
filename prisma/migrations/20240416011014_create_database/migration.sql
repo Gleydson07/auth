@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "RoleEnum" AS ENUM ('USER', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -6,6 +9,7 @@ CREATE TABLE "users" (
     "email" VARCHAR NOT NULL,
     "password" VARCHAR NOT NULL,
     "active" BOOLEAN DEFAULT true,
+    "role" "RoleEnum" NOT NULL DEFAULT 'USER',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -44,6 +48,7 @@ CREATE TABLE "addresses" (
 CREATE TABLE "black-list-tokens" (
     "token" VARCHAR NOT NULL,
     "revoked_by_user_id" INTEGER NOT NULL,
+    "args" VARCHAR(200) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

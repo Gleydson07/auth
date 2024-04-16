@@ -9,6 +9,7 @@ export class BlackListService {
     return this.prismaService.blackListTokens.create({
       data: {
         token: createBlackList.token,
+        args: createBlackList.args,
         revokedByUserId: createBlackList.revokedByUserId,
       }
     })
