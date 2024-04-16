@@ -1,17 +1,20 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from "@/database/Prisma/prisma.service";
 import { UserFromToken } from "@/auth/dto/token-payload.dto";
 import { RoleEnum } from "@prisma/client";
-import { CreateRoleDto } from "./dto/create-role.dto";
+import { BlackListService } from "@/auth/black-list/black-list.service";
 
 const SALT = 12;
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly blackListService: BlackListService,
+  ) { }
 
   async create(data: CreateUserDto) {
     try {
@@ -40,7 +43,7 @@ export class UsersService {
     }
   }
 
-  async changeRole(user: UserFromToken, data: CreateRoleDto) {
+  async changeRole(user: UserFromToken, role: RoleEnum, userId: number) {
     try {
       const operator = await this.findOneById(user.sub);
 
@@ -48,22 +51,22 @@ export class UsersService {
         throw new Error("Você não tem permissão de administrador.");
       }
 
-      const userToUpdateRole = await this.findOneById(data.userId);
+      const userToUpdateRole = await this.findOneById(userId);
 
       if (!userToUpdateRole) {
         throw new Error("Usuário não encontrado.");
       }
 
-      if (Number(user.sub) === Number(data.userId)) {
+      if (Number(user.sub) === Number(userId)) {
         throw new Error("Você não pode alterar seu nível de acesso.");
       }
 
       await this.prismaService.user.update({
         where: {
-          id: data.userId,
+          id: userId,
         },
         data: {
-          role: data.role
+          role: role
         },
       });
     } catch (error) {
@@ -71,13 +74,59 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.prismaService.user.findMany();
+  async changeActive(user: UserFromToken, userId: number) {
+    try {
+      const userToUpdateRole = await this.findOneById(userId);
+
+      if (!userToUpdateRole) {
+        throw new Error("Usuário não encontrado.");
+      }
+
+      if (Number(user.sub) === Number(userId)) {
+        throw new Error("Você não pode alterar seu status.");
+      }
+
+      await this.prismaService.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          active: true
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
-  findOneById(id: number) {
-    return this.prismaService.user.findUnique({
-      where: { id: id }
+  async findAll() {
+    return await this.prismaService.user.findMany({
+      where: {
+        active: true
+      },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      }
+    });
+  }
+
+  async findOneById(id: number) {
+    return await this.prismaService.user.findUnique({
+      where: { id: id },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        active: true,
+        role: true,
+        createdAt: true,
+      }
     });
   }
 
@@ -97,33 +146,53 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    this.prismaService.user.update({
-      where: {
-        id
-      },
-      data: {
-        name: updateUserDto.name,
-        lastname: updateUserDto.lastname
-      },
-    });
-  }
+  async update(user: UserFromToken, id: number, updateUserDto: UpdateUserDto) {
+    try {
+      const userFound = await this.findOneById(user.sub);
 
-  remove(id: number) {
-    return this.prismaService.user.update({
-      where: {
-        id
-      },
-      data: {
-        active: false
+      if (Number(user.sub) !== Number(id) && userFound.role !== RoleEnum.ADMIN) {
+        throw new Error("Não é permitido alterar o cadastro de terceiros.")
       }
-    });
+
+      await this.prismaService.user.update({
+        where: {
+          id
+        },
+        data: {
+          name: updateUserDto.name,
+          lastname: updateUserDto.lastname
+        },
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao atualizar dados do usuário.", HttpStatus.BAD_REQUEST);
+    }
   }
 
-  removeDefault() {
-    return this.prismaService.user.delete({
+  async remove(user: UserFromToken, token: string, id: number) {
+    try {
+      await this.prismaService.user.update({
+        where: {
+          id
+        },
+        data: {
+          active: false
+        }
+      });
+
+      return this.blackListService.create({token, args: "delete-account", revokedByUserId: user.sub})
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao remover usuário.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateUserAdmin({ active, role }: {active: boolean, role: RoleEnum}) {
+    return await this.prismaService.user.update({
       where: {
         email: "admin@admin.com"
+      },
+      data: {
+        active,
+        role
       }
     });
   }

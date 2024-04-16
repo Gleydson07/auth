@@ -6,7 +6,6 @@ import { ConfigService } from "@nestjs/config";
 import { UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
 import { BlackListService } from "@/auth/black-list/black-list.service";
-import { RoleEnum } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -78,7 +77,7 @@ export class AuthService {
         email: oldPayload.email
       }
 
-      this.revokeToken(refreshToken, "refresh-token", oldPayload);
+      await this.revokeToken(refreshToken, "refresh-token", oldPayload);
 
       return {
         accessToken: await this.generateToken(

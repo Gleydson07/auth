@@ -5,24 +5,38 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from "@/auth/guards/auth.guard";
 import { User } from "@/utils/decorators/user-extract-auth.decorator";
 import { UserFromToken } from "@/auth/dto/token-payload.dto";
-import { CreateRoleDto } from "./dto/create-role.dto";
+import { RoleEnum } from "@prisma/client";
+import { OnlyAdminGuard } from "@/auth/guards/only-admin.guard";
+import { Token } from "@/utils/decorators/token-extract-auth.decorator";
 
 @UseGuards(AuthGuard)
 @Controller('')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  @UseGuards(OnlyAdminGuard)
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  @Post("roles")
-  createRole(
-    @Body() data: CreateRoleDto,
+  @UseGuards(OnlyAdminGuard)
+  @Post("/:userId/roles/:role")
+  role(
+    @Param("role") role: RoleEnum,
+    @Param("userId") userId: number,
     @User() user: UserFromToken
   ) {
-    return this.usersService.changeRole(user, data);
+    return this.usersService.changeRole(user, role, +userId);
+  }
+
+  @UseGuards(OnlyAdminGuard)
+  @Post("/:userId/enable")
+  active(
+    @Param("userId") userId: number,
+    @User() user: UserFromToken
+  ) {
+    return this.usersService.changeActive(user, +userId);
   }
 
   @Get()
@@ -36,19 +50,29 @@ export class UsersController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @User() user: UserFromToken
+  ) {
+    return this.usersService.update(user, +id, updateUserDto);
   }
 
+  @UseGuards(OnlyAdminGuard)
+  @HttpCode(204)
+  @Put('/admin/default')
+  updateDefaultProfile(@Body() data: {active: boolean, role: RoleEnum}) {
+    return this.usersService.updateUserAdmin(data);
+  }
+
+  @UseGuards(OnlyAdminGuard)
   @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
-
-  @HttpCode(204)
-  @Delete('/default')
-  removeDefaultProfile() {
-    return this.usersService.removeDefault();
+  remove(
+    @Param('id') id: string,
+    @User() user: UserFromToken,
+    @Token() token: string,
+  ) {
+    return this.usersService.remove(user, token, +id);
   }
 }
