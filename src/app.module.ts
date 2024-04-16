@@ -8,7 +8,6 @@ import { DatabaseModule } from "./database/database.module";
 import { ConfigModule } from "@nestjs/config";
 import { BlackListModule } from './auth/black-list/black-list.module';
 import { ProfilesModule } from './profiles/profiles.module';
-import { MulterModule } from "@nestjs/platform-express";
 import { AddressesModule } from "./addresses/addresses.module";
 
 export const prefix = 'ms-auth/api/v1'
@@ -21,15 +20,11 @@ export const prefix = 'ms-auth/api/v1'
     UsersModule,
     BlackListModule,
     ProfilesModule,
-    MulterModule.register({
-      limits: {
-        fileSize: 1024 * 1024 * 10, // 10MB limite de tamanho do arquivo
-      },
-    }),
     RouterModule.register([
       { path: `${prefix}/auth`, module: AuthModule },
       { path: `${prefix}/users`, module: UsersModule },
-      { path: `${prefix}/profiles`, module: ProfilesModule },
+      { path: `${prefix}/users/profiles`, module: ProfilesModule },
+      { path: `${prefix}/users/addresses`, module: AddressesModule },
     ]),
     AddressesModule,
   ],

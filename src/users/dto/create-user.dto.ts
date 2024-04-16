@@ -7,10 +7,6 @@ export class CreateUserDto {
   @IsString()
   lastname: string
 
-  @IsOptional()
-  @IsString()
-  nickname?: string
-
   @IsEmail()
   email: string
 

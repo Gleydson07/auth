@@ -3,24 +3,24 @@ import { Address } from "../entities/address.entity";
 
 export class CreateAddressDto extends Address {
   @IsNumber()
-  userId: Number
+  userId: number
 
   @IsString()
-  neighborhood: String
-
-  @IsOptional()
-  @IsString()
-  street?: String
+  neighborhood: string
 
   @IsOptional()
   @IsString()
-  number?: String
+  street?: string
+
+  @IsOptional()
+  @IsString()
+  number?: string
 
   @IsString()
-  city: String
+  city: string
 
   @IsString()
-  country: String
+  country: string
 
   @IsDate()
   createdAt: Date

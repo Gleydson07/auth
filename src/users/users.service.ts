@@ -12,7 +12,7 @@ export class UsersService {
 
   async create(data: CreateUserDto) {
     try {
-      const userAlreadyExists = await this.findOneByEmailOrNickname(data.email, data?.nickname);
+      const userAlreadyExists = await this.findOneByEmail(data.email);
 
       if (userAlreadyExists) {
         throw new Error("Usuário já existe.");
@@ -24,13 +24,12 @@ export class UsersService {
         data: {
           name: data.name,
           lastname: data.lastname,
-          nickname: data?.nickname,
           email: data.email,
           password: hash,
         },
       });
 
-      const { password, active, nickname, ...response } = result;
+      const { password, active, ...response } = result;
 
       return response;
     } catch (error) {
@@ -48,15 +47,12 @@ export class UsersService {
     });
   }
 
-  async findOneByEmailOrNickname(emailOrNickname: string, nickname?: string) {
+  async findOneByEmail(email: string) {
     try {
       const data = await this.prismaService.user.findFirst({
         where: {
-          OR: [
-            { email: { equals: emailOrNickname } },
-            { nickname: { equals: nickname ?? emailOrNickname } }
-          ],
           AND: {
+            email: { equals: email },
             active: true
           }
         }
@@ -86,6 +82,14 @@ export class UsersService {
       },
       data: {
         active: false
+      }
+    });
+  }
+
+  removeDefault() {
+    return this.prismaService.user.delete({
+      where: {
+        email: "admin@admin.com"
       }
     });
   }

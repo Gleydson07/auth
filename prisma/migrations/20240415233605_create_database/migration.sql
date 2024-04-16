@@ -3,7 +3,6 @@ CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR NOT NULL,
     "lastname" VARCHAR NOT NULL,
-    "nickname" VARCHAR,
     "email" VARCHAR NOT NULL,
     "password" VARCHAR NOT NULL,
     "active" BOOLEAN DEFAULT true,
@@ -20,7 +19,6 @@ CREATE TABLE "profiles" (
     "birth_day" TIMESTAMP(3),
     "gender" VARCHAR,
     "mainRegistration" VARCHAR,
-    "avatar_url" VARCHAR,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -51,9 +49,6 @@ CREATE TABLE "black-list-tokens" (
 
     CONSTRAINT "black-list-tokens_pkey" PRIMARY KEY ("token")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_nickname_key" ON "users"("nickname");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");

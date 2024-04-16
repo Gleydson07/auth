@@ -4,7 +4,6 @@ export class Profile {
   birthDay?: Date
   gender?: String
   mainRegistration?: String
-  avatarUrl?: String
   createdAt?: Date
   updatedAt?: Date
 }

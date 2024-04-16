@@ -18,7 +18,7 @@ export class AuthService {
 
   async signIn({ login, password: pass }: SignInAuthDto): Promise<any> {
     try {
-      const user = await this.usersService.findOneByEmailOrNickname(login);
+      const user = await this.usersService.findOneByEmail(login);
 
       if (!user?.id) {
         throw new UnauthorizedException('Usuário não autorizado.');

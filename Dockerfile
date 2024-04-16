@@ -22,6 +22,9 @@ COPY . .
 # Generate database table structure
 RUN npx prisma generate
 
+# Run seed
+RUN npx prisma db seed
+
 # Execute the migrations to database
 RUN npx prisma migrate deploy
 

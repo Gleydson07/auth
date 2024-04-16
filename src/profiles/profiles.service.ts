@@ -18,10 +18,6 @@ export class ProfilesService {
     });
   }
 
-  uploadAvatar() {
-
-  }
-
   findOne(userId: number) {
     return this.prismaService.profile.findUnique({
       where: { userId: userId }

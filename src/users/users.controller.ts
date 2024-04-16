@@ -34,4 +34,10 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+  @HttpCode(204)
+  @Delete('/default')
+  removeDefaultProfile() {
+    return this.usersService.removeDefault();
+  }
 }
