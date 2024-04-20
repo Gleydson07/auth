@@ -45,7 +45,7 @@ export class UsersService {
 
   async changeRole(user: UserFromToken, role: RoleEnum, userId: number) {
     try {
-      const userToUpdateRole = await this.findOneById(userId);
+      const userToUpdateRole = await this.findOneActiveById(userId);
 
       if (!userToUpdateRole) {
         throw new Error("Usuário não encontrado.");
@@ -124,14 +124,26 @@ export class UsersService {
     });
   }
 
+  async findOneActiveById(id: number) {
+    return await this.prismaService.user.findUnique({
+      where: { id: id, active: true },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        active: true,
+        role: true,
+        createdAt: true,
+      }
+    });
+  }
+
   async findOneByEmail(email: string) {
     try {
       const data = await this.prismaService.user.findFirst({
         where: {
-          AND: {
-            email: { equals: email },
-            active: true
-          }
+          email: { equals: email },
         }
       });
       return data;
@@ -150,7 +162,8 @@ export class UsersService {
 
       await this.prismaService.user.update({
         where: {
-          id
+          id,
+          active: true
         },
         data: {
           name: updateUserDto.name,
@@ -164,9 +177,15 @@ export class UsersService {
 
   async remove(user: UserFromToken, token: string, id: number) {
     try {
+      const userToUpdateRole = await this.findOneActiveById(+id);
+
+      if (!userToUpdateRole) {
+        throw new Error("Usuário não encontrado.");
+      }
+
       await this.prismaService.user.update({
         where: {
-          id
+          id: +id
         },
         data: {
           active: false
@@ -179,14 +198,13 @@ export class UsersService {
     }
   }
 
-  async updateUserAdmin({ active, role }: {active: boolean, role: RoleEnum}) {
+  async updateUserAdmin({ active }: {active: boolean}) {
     return await this.prismaService.user.update({
       where: {
         email: "admin@admin.com"
       },
       data: {
         active,
-        role
       }
     });
   }

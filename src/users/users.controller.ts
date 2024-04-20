@@ -46,7 +46,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOneById(+id);
+    return this.usersService.findOneActiveById(+id);
   }
 
   @Put(':id')
@@ -60,8 +60,8 @@ export class UsersController {
 
   @UseGuards(OnlyAdminGuard)
   @HttpCode(204)
-  @Put('/admin/default')
-  updateDefaultProfile(@Body() data: {active: boolean, role: RoleEnum}) {
+  @Put('/admin/status')
+  updateDefaultProfile(@Body() data: {active: boolean}) {
     return this.usersService.updateUserAdmin(data);
   }
 
