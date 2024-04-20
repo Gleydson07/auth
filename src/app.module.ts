@@ -23,9 +23,14 @@ export const prefix = 'ms-auth/api/v1'
     AddressesModule,
     RouterModule.register([
       { path: `${prefix}/auth`, module: AuthModule },
-      { path: `${prefix}/users`, module: UsersModule },
-      { path: `${prefix}/users/profiles`, module: ProfilesModule },
-      { path: `${prefix}/users/addresses`, module: AddressesModule },
+      {
+        path: `${prefix}/users`,
+        module: UsersModule,
+        children: [
+          { path: `profiles`, module: ProfilesModule },
+          { path: `addresses`, module: AddressesModule },
+        ]
+      },
     ]),
   ],
   controllers: [AppController],

@@ -1,5 +1,4 @@
-import { IsDate, IsNumber, IsOptional } from "class-validator"
-import { Profile } from "../entities/profile.entity"
+import { IsDate, IsOptional, IsString } from "class-validator"
 
 export enum GenderEnum {
   Masc = "M",
@@ -7,12 +6,9 @@ export enum GenderEnum {
   Other = "Other"
 }
 
-export class CreateProfileDto extends Profile {
-  @IsNumber()
-  userId: number
-
+export class CreateProfileDto {
   @IsOptional()
-  @IsDate()
+  @IsString()
   birthDay?: Date
 
   @IsOptional()
