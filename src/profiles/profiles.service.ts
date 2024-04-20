@@ -30,7 +30,9 @@ export class ProfilesService {
           userId: userId,
           birthDay: createProfile.birthDay ? new Date(createProfile?.birthDay) : undefined,
           gender: createProfile?.gender,
-          mainRegistration: createProfile.mainRegistration,
+          phone: createProfile?.phone,
+          document: createProfile.document,
+          documentType: createProfile.documentType,
         }
       });
     } catch (error) {
@@ -68,7 +70,9 @@ export class ProfilesService {
         data: {
           birthDay,
           gender: updateProfile?.gender,
-          mainRegistration: updateProfile?.mainRegistration,
+          phone: updateProfile?.phone,
+          document: updateProfile?.document,
+          documentType: updateProfile?.documentType,
         }
       });
     } catch (error) {

@@ -1,4 +1,4 @@
-import { IsDate, IsOptional, IsString } from "class-validator"
+import { IsOptional, IsString } from "class-validator"
 
 export enum GenderEnum {
   Masc = "M",
@@ -15,5 +15,11 @@ export class CreateProfileDto {
   gender?: GenderEnum
 
   @IsOptional()
-  mainRegistration?: string
+  phone?: string
+
+  @IsOptional()
+  document?: string
+
+  @IsOptional()
+  documentType?: string
 }

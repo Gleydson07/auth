@@ -27,8 +27,10 @@ model Profile {
   id               Int       @id @default(autoincrement())
   userId           Int       @unique @map("user_id")
   birthDay         DateTime? @map("birth_day")
+  phone            String?   @db.VarChar()
   gender           String?   @db.VarChar()
-  mainRegistration String?   @db.VarChar()
+  document         String?   @db.VarChar()
+  documentType     String?   @db.VarChar() @map("document_type")
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 

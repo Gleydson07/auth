@@ -21,8 +21,10 @@ CREATE TABLE "profiles" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "birth_day" TIMESTAMP(3),
+    "phone" VARCHAR,
     "gender" VARCHAR,
-    "mainRegistration" VARCHAR,
+    "document" VARCHAR,
+    "document_type" VARCHAR,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
