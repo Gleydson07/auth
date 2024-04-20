@@ -2,9 +2,6 @@ import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
 import { Address } from "../entities/address.entity";
 
 export class CreateAddressDto extends Address {
-  @IsNumber()
-  userId: number
-
   @IsString()
   neighborhood: string
 
@@ -21,10 +18,4 @@ export class CreateAddressDto extends Address {
 
   @IsString()
   country: string
-
-  @IsDate()
-  createdAt: Date
-
-  @IsDate()
-  updatedAt: Date
 }

@@ -27,8 +27,8 @@ export const prefix = 'ms-auth/api/v1'
         path: `${prefix}/users`,
         module: UsersModule,
         children: [
-          { path: `profiles`, module: ProfilesModule },
-          { path: `addresses`, module: AddressesModule },
+          { path: `/:id/profiles`, module: ProfilesModule },
+          { path: `/:id/addresses`, module: AddressesModule },
         ]
       },
     ]),

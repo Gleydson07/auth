@@ -12,16 +12,22 @@ export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) { }
 
   @Post()
-  create(@Body() createProfile: CreateProfileDto, @User() user: UserFromToken) {
-    return this.profilesService.create(+user.sub, createProfile);
+  create(
+    @Param("id") userId: number,
+    @Body() createProfile: CreateProfileDto,
+    @User() user: UserFromToken
+  ) {
+    return this.profilesService.create(+userId, +user.sub, createProfile);
   }
 
-  @Get(":id")
-  findOne(@Param("id") userId: number, @User() user: UserFromToken) {
-    return this.profilesService.findOne(+userId, +user.sub);
+  @Get()
+  findOne(
+    @Param("id") userId: number,
+  ) {
+    return this.profilesService.findOne(+userId);
   }
 
-  @Put(":id")
+  @Put()
   update(
     @Param("id") userId: number,
     @Body() updateProfile: UpdateProfileDto,

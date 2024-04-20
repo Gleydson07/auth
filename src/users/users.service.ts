@@ -45,12 +45,6 @@ export class UsersService {
 
   async changeRole(user: UserFromToken, role: RoleEnum, userId: number) {
     try {
-      const operator = await this.findOneById(user.sub);
-
-      if (!operator || operator && operator.role !== RoleEnum.ADMIN) {
-        throw new Error("Você não tem permissão de administrador.");
-      }
-
       const userToUpdateRole = await this.findOneById(userId);
 
       if (!userToUpdateRole) {
@@ -148,11 +142,11 @@ export class UsersService {
 
   async update(user: UserFromToken, id: number, updateUserDto: UpdateUserDto) {
     try {
-      const userFound = await this.findOneById(user.sub);
-
-      if (Number(user.sub) !== Number(id) && userFound.role !== RoleEnum.ADMIN) {
-        throw new Error("Não é permitido alterar o cadastro de terceiros.")
-      }
+      await this.checkIsUserAdminOrSameId({
+        userId: id,
+        userIdFromToken: user.sub,
+        messageError: "Não é permitido alterar o cadastro de terceiros."
+      })
 
       await this.prismaService.user.update({
         where: {
@@ -195,5 +189,17 @@ export class UsersService {
         role
       }
     });
+  }
+
+  async checkIsUserAdminOrSameId(props: {
+    userId: number,
+    userIdFromToken: number,
+    messageError: string
+  }) {
+    const userFound = await this.findOneById(+props.userIdFromToken);
+
+    if (Number(props.userIdFromToken) !== Number(props.userId) && userFound?.role !== RoleEnum.ADMIN) {
+      throw new Error(props.messageError);
+    }
   }
 }
