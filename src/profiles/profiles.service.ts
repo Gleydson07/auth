@@ -19,6 +19,12 @@ export class ProfilesService {
         messageError: "Usuário sem autorização para cadastrar perfil."
       });
 
+      const profileFound = await this.findOne(userId);
+
+      if (profileFound) {
+        throw new Error("Usuário já possui um perfil vinculado.");
+      }
+
       return await this.prismaService.profile.create({
         data: {
           userId: userId,
@@ -47,6 +53,12 @@ export class ProfilesService {
         messageError: "Não é permitido alterar o perfil de terceiros."
       })
 
+      const profileFound = await this.findOne(userId);
+
+      if (!profileFound) {
+        throw new Error("Perfil não encontrado.");
+      }
+
       const birthDay = updateProfile?.birthDay ? new Date(updateProfile?.birthDay) : undefined;
 
       return this.prismaService.profile.update({
@@ -61,6 +73,30 @@ export class ProfilesService {
       });
     } catch (error) {
       throw new HttpException("Falha ao alterar perfil!", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async remove(userId: number, userIdFromToken: number) {
+    try {
+      await this.userService.checkIsUserAdminOrSameId({
+        userId: userId,
+        userIdFromToken: userIdFromToken,
+        messageError: "Não é permitido remover o perfil de terceiros."
+      })
+
+      const profileFound = await this.findOne(userId);
+
+      if (!profileFound) {
+        throw new Error("Perfil não encontrado.");
+      }
+
+      await this.prismaService.profile.delete({
+        where: {
+          userId: userId
+        },
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao remover perfil!", HttpStatus.BAD_REQUEST);
     }
   }
 }
