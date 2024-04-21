@@ -6,6 +6,10 @@ import { ConfigService } from "@nestjs/config";
 import { UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
 import { BlackListService } from "@/auth/black-list/black-list.service";
+import { MailerService } from "@/mailer/mailer.service";
+import { SendMailDto } from "@/mailer/dto/send-mail.dto";
+import { templateFormatter } from "@/mailer/utils/replacer";
+import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
 
 @Injectable()
 export class AuthService {
@@ -13,6 +17,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private blackListService: BlackListService,
+    private mailerService: MailerService,
     private configService: ConfigService
   ) { }
 
@@ -106,6 +111,39 @@ export class AuthService {
 
   async signOut(token: string, args: string, user: UserFromToken): Promise<any> {
     return await this.revokeToken(token, args, user);
+  }
+
+  async sendEmailToRecoveryPassword(email: string) {
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+
+      if (!user || user && !user?.active) {
+        throw new Error("Usuário não existe.");
+      }
+
+      const userSender = this.configService.get<string>("MAIL_DEFAULT_SENDER");
+
+      const mailReplacements = {
+        user: `${user.name} ${user.lastname}`,
+        hashProvisional: Math.random().toString(36).substring(0, 6),
+        recoveryPasswordLink: this.configService.get<string>("MAIL_REDIRECT"),
+        companyName: this.configService.get<string>("MAIL_APP_NAME")
+      };
+
+      const mailProps: SendMailDto = {
+        from: userSender,
+        recipients: user.email,
+        subject: "Recuperação de senha",
+        text: "Olá!/n Siga as orientações abaixo para recuperar sua senha:",
+        html: mailReplacements ? templateFormatter(templateRecoveryPassword, mailReplacements) : templateRecoveryPassword
+      }
+
+      await this.usersService.updatePassword(user.id, mailReplacements.hashProvisional);
+      await this.mailerService.sendMail(mailProps);
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
+    }
   }
 
   private async generateToken(payload: any, secret: string, expiresIn: string) {

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, Delete, UseGuards, Req, Headers } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Delete, UseGuards, Req, Headers, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInAuthDto } from './dto/sign-in.dto';
 import { User } from "@/utils/decorators/user-extract-auth.decorator";
@@ -21,6 +21,12 @@ export class AuthController {
   @Post('refresh')
   refreshToken(@Body('refreshToken') refreshToken: string) {
     return this.authService.refresh(refreshToken);
+  }
+
+  @HttpCode(200)
+  @Post('/recovery-password/:email/email')
+  requerstRecoveryPassword(@Param('email') emailRecipient: string) {
+    return this.authService.sendEmailToRecoveryPassword(emailRecipient);
   }
 
   @UseGuards(AuthGuard, OnlyAdminGuard)

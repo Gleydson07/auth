@@ -9,6 +9,7 @@ import { ConfigModule } from "@nestjs/config";
 import { BlackListModule } from './auth/black-list/black-list.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { AddressesModule } from "./addresses/addresses.module";
+import { MailerModule } from './mailer/mailer.module';
 
 export const prefix = 'ms-auth/api/v1'
 
@@ -21,6 +22,7 @@ export const prefix = 'ms-auth/api/v1'
     BlackListModule,
     ProfilesModule,
     AddressesModule,
+    MailerModule,
     RouterModule.register([
       { path: `${prefix}/auth`, module: AuthModule },
       {

@@ -5,10 +5,11 @@ import { ConfigModule } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { UsersModule } from "@/users/users.module";
 import { BlackListService } from "@/auth/black-list/black-list.service";
+import { MailerService } from "@/mailer/mailer.service";
 
 @Module({
   imports: [UsersModule, ConfigModule],
-  providers: [AuthService, JwtService, BlackListService],
+  providers: [AuthService, JwtService, BlackListService, MailerService],
   controllers: [AuthController],
   exports: [AuthService]
 })

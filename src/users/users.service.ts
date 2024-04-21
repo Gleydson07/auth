@@ -152,6 +152,23 @@ export class UsersService {
     }
   }
 
+  async updatePassword(id: number, password: string) {
+    try {
+      const hash = await bcrypt.hash(password, SALT);
+      await this.prismaService.user.update({
+        where: {
+          id,
+          active: true
+        },
+        data: {
+          password: hash,
+        },
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao atualizar password.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async update(user: UserFromToken, id: number, updateUserDto: UpdateUserDto) {
     try {
       await this.checkIsUserAdminOrSameId({

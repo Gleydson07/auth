@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 import { Address } from "../entities/address.entity";
 
 export class CreateAddressDto extends Address {
