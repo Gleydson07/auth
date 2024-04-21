@@ -13,7 +13,7 @@ export class MailerService {
       port: Number(this.configService.get<number>("MAIL_PORT") || 465),
       secure: Boolean(this.configService.get<string>("MAIL_SECURE") || true),
       auth: {
-        user: this.configService.get<string>("MAIL_USER"),
+        user: this.configService.get<string>("MAIL_DEFAULT_SENDER"),
         pass: this.configService.get<string>("MAIL_PASS")
       },
     });

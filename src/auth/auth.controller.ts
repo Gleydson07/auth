@@ -23,7 +23,7 @@ export class AuthController {
     return this.authService.refresh(refreshToken);
   }
 
-  @HttpCode(200)
+  @HttpCode(204)
   @Post('/recovery-password/:email/email')
   requerstRecoveryPassword(@Param('email') emailRecipient: string) {
     return this.authService.sendEmailToRecoveryPassword(emailRecipient);

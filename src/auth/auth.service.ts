@@ -131,15 +131,15 @@ export class AuthService {
       };
 
       const mailProps: SendMailDto = {
-        from: userSender,
+        from: `"${mailReplacements.companyName}" <${userSender}>`,
         recipients: user.email,
         subject: "Recuperação de senha",
-        text: "Olá!/n Siga as orientações abaixo para recuperar sua senha:",
+        text: "/nOlá!/n Siga as orientações abaixo para recuperar sua senha:",
         html: mailReplacements ? templateFormatter(templateRecoveryPassword, mailReplacements) : templateRecoveryPassword
       }
 
       await this.usersService.updatePassword(user.id, mailReplacements.hashProvisional);
-      await this.mailerService.sendMail(mailProps);
+      this.mailerService.sendMail(mailProps);
     } catch (error) {
       console.error(error);
       throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
