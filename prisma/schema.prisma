@@ -8,19 +8,33 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar()
-  lastname  String   @db.VarChar()
-  email     String   @unique() @db.VarChar()
-  password  String   @db.VarChar()
-  active    Boolean? @default(true)
-  role      RoleEnum @map("role") @default(USER)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                                      Int       @id @default(autoincrement())
+  name                                    String    @db.VarChar()
+  lastname                                String    @db.VarChar()
+  email                                   String    @unique() @db.VarChar()
+  password                                String    @db.VarChar()
+  active                                  Boolean?  @default(true)
+  role                                    RoleEnum  @map("role") @default(USER)
+  createdAt                               DateTime  @default(now()) @map("created_at")
+  updatedAt                               DateTime  @updatedAt @map("updated_at")
 
   profile Profile?
+  provisionalPassword ProvisionalPassword[]
   address Address[]
   @@map("users")
+}
+
+model ProvisionalPassword {
+  id                                      Int       @id @default(autoincrement())
+  userId                                  Int       @unique @map("user_id")
+  provisionalPassword                     String?   @map("provisional_password")
+  active                                  Boolean?  @default(false) @map("active")
+  expiresIn                               DateTime? @map("expires_in")
+  createdAt                               DateTime  @default(now()) @map("created_at")
+  updatedAt                               DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+  @@map("provisional_password")
 }
 
 model Profile {

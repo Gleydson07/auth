@@ -17,6 +17,19 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
+CREATE TABLE "provisional_password" (
+    "id" SERIAL NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "provisional_password" TEXT,
+    "active" BOOLEAN DEFAULT false,
+    "expires_in" TIMESTAMP(3),
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "provisional_password_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "profiles" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
@@ -61,7 +74,13 @@ CREATE TABLE "black-list-tokens" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "provisional_password_user_id_key" ON "provisional_password"("user_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
+
+-- AddForeignKey
+ALTER TABLE "provisional_password" ADD CONSTRAINT "provisional_password_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

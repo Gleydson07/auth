@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, Delete, UseGuards, Req, Headers, Param } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Delete, UseGuards, Req, Headers, Param, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInAuthDto } from './dto/sign-in.dto';
 import { User } from "@/utils/decorators/user-extract-auth.decorator";
@@ -6,6 +6,8 @@ import { UserFromToken } from "./dto/token-payload.dto";
 import { AuthGuard } from "./guards/auth.guard";
 import { Token } from "@/utils/decorators/token-extract-auth.decorator";
 import { OnlyAdminGuard } from "./guards/only-admin.guard";
+import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 
 @Controller('')
 export class AuthController {
@@ -27,6 +29,20 @@ export class AuthController {
   @Post('/recovery-password/:email/email')
   requerstRecoveryPassword(@Param('email') emailRecipient: string) {
     return this.authService.sendEmailToRecoveryPassword(emailRecipient);
+  }
+
+  @HttpCode(204)
+  @Post('/recovery-password')
+  RecoveryPassword(@Body() data: RecoveryPasswordDto) {
+    return this.authService.recoveryPassword(data);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(204)
+  @Put('/password')
+  ChangePassword(@Body() data: UpdatePasswordDto) {
+    const { login, currentPassword, password } = data;
+    return this.authService.updatePassword(login, currentPassword, password);
   }
 
   @UseGuards(AuthGuard, OnlyAdminGuard)

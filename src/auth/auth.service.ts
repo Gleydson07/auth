@@ -3,13 +3,14 @@ import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@n
 import { SignInAuthDto } from "./dto/sign-in.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { UsersService } from "@/users/users.service";
+import { SALT, UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
 import { BlackListService } from "@/auth/black-list/black-list.service";
 import { MailerService } from "@/mailer/mailer.service";
 import { SendMailDto } from "@/mailer/dto/send-mail.dto";
 import { templateFormatter } from "@/mailer/utils/replacer";
 import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
+import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
 
 @Injectable()
 export class AuthService {
@@ -113,6 +114,25 @@ export class AuthService {
     return await this.revokeToken(token, args, user);
   }
 
+  async updatePassword(email: string, currentPassword: string, password: string) {
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+
+      const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
+
+      if (!isMatch) {
+        throw new HttpException("Dados incompatíveis.", HttpStatus.BAD_REQUEST);
+      }
+
+      await this.usersService.updatePassword(email, password);
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao atualizar password.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async sendEmailToRecoveryPassword(email: string) {
     try {
       const user = await this.usersService.findOneByEmail(email);
@@ -125,7 +145,7 @@ export class AuthService {
 
       const mailReplacements = {
         user: `${user.name} ${user.lastname}`,
-        hashProvisional: Math.random().toString(36).substring(0, 6),
+        hashProvisional: Math.random().toString(36).substring(0, 12),
         recoveryPasswordLink: this.configService.get<string>("MAIL_REDIRECT"),
         companyName: this.configService.get<string>("MAIL_APP_NAME")
       };
@@ -138,11 +158,34 @@ export class AuthService {
         html: mailReplacements ? templateFormatter(templateRecoveryPassword, mailReplacements) : templateRecoveryPassword
       }
 
-      await this.usersService.updatePassword(user.id, mailReplacements.hashProvisional);
+      await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
       this.mailerService.sendMail(mailProps);
     } catch (error) {
       console.error(error);
       throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async recoveryPassword(data: RecoveryPasswordDto) {
+    try {
+      const { login, password, provisionalPassword } = data;
+
+      const user = await this.usersService.findPasswordAndProvisionalPasswordByEmail(login);
+      const isMatch = await bcrypt.compare(
+        provisionalPassword,
+        user.provisionalPassword[0].provisionalPassword
+      );
+
+      if (!isMatch) {
+        throw new HttpException("A senha provisória é incompatível.", HttpStatus.UNAUTHORIZED);
+      }
+
+      const hash = await bcrypt.hash(password, SALT);
+      await this.usersService.updatePassword(user.email, hash);
+      this.usersService.disableProvisionalPasswordByUserId(user.id);
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(error?.message || "Falha ao gerar nova senha!", HttpStatus.BAD_REQUEST);
     }
   }
 

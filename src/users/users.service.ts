@@ -7,7 +7,7 @@ import { UserFromToken } from "@/auth/dto/token-payload.dto";
 import { RoleEnum } from "@prisma/client";
 import { BlackListService } from "@/auth/black-list/black-list.service";
 
-const SALT = 12;
+export const SALT = 12;
 
 @Injectable()
 export class UsersService {
@@ -152,12 +152,110 @@ export class UsersService {
     }
   }
 
-  async updatePassword(id: number, password: string) {
+  async generateProvisionalPassword(userId: number, password: string) {
+    try {
+      const hash = await bcrypt.hash(password, SALT);
+      const currentDate = new Date();
+
+      await this.disableProvisionalPasswordByUserId(userId);
+      await this.prismaService.provisionalPassword.create({
+        data: {
+          active: true,
+          provisionalPassword: hash,
+          userId: userId,
+          expiresIn: new Date(currentDate.setMinutes(currentDate.getMinutes() + 5))
+        }
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao gerar senha provisória.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findExpiredProvisionalPassword(isActive?: boolean) {
+    return await this.prismaService.provisionalPassword.findMany({
+      where: {
+        active: isActive,
+        expiresIn: {
+          lte: new Date()
+        }
+      },
+      select: {
+        id: true
+      }
+    })
+  }
+
+  async disableProvisionalPasswordByUserId(userId: number) {
+    try {
+      await this.prismaService.provisionalPassword.updateMany({
+        where: {
+          userId: userId,
+        },
+        data: {
+          active: false
+        }
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao desabilitar senha provisória.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findPasswordAndProvisionalPasswordByEmail(email: string) {
+    return await this.prismaService.user.findFirst({
+      where: {
+        email: email,
+        provisionalPassword: {
+          some: {
+            active: true
+          }
+        }
+      },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        provisionalPassword: {
+          select: {
+            provisionalPassword: true
+          }
+        }
+      }
+    });
+  }
+
+  async disableProvisionalPasswordByIds(ids: number[]) {
+    try {
+      await this.prismaService.provisionalPassword.updateMany({
+        where: {
+          id: { in: ids },
+        },
+        data: {
+          active: false
+        }
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao desabilitar senha provisória.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async deleteProvisionalPasswordByIds(ids: number[]) {
+    try {
+      await this.prismaService.provisionalPassword.deleteMany({
+        where: {
+          id: { in: ids },
+        }
+      });
+    } catch (error) {
+      throw new HttpException(error.message || "Falha ao remover senhas provisórias.", HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updatePassword(email: string, password: string) {
     try {
       const hash = await bcrypt.hash(password, SALT);
       await this.prismaService.user.update({
         where: {
-          id,
+          email,
           active: true
         },
         data: {

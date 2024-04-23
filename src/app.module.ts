@@ -1,21 +1,24 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from "@nestjs/config";
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RouterModule } from "@nestjs/core";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { DatabaseModule } from "./database/database.module";
-import { ConfigModule } from "@nestjs/config";
 import { BlackListModule } from './auth/black-list/black-list.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { AddressesModule } from "./addresses/addresses.module";
 import { MailerModule } from './mailer/mailer.module';
+import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
 
 export const prefix = 'ms-auth/api/v1'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     DatabaseModule,
     AuthModule,
     UsersModule,
@@ -23,6 +26,7 @@ export const prefix = 'ms-auth/api/v1'
     ProfilesModule,
     AddressesModule,
     MailerModule,
+    ScheduledTasksModule,
     RouterModule.register([
       { path: `${prefix}/auth`, module: AuthModule },
       {
