@@ -1,3 +1,4 @@
+import { DocTypeEnum } from "@prisma/client"
 import { IsOptional, IsString } from "class-validator"
 
 export enum GenderEnum {
@@ -21,5 +22,5 @@ export class CreateProfileDto {
   document?: string
 
   @IsOptional()
-  documentType?: string
+  documentType?: DocTypeEnum
 }
