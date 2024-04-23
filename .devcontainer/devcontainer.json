@@ -6,7 +6,8 @@
       "extensions": [
         "ms-vscode-remote.remote-containers",
         "Prisma.prisma",
-        "Postman.postman-for-vscode"
+        "Postman.postman-for-vscode",
+        "dineug.vuerd-vscode"
       ],
       "settings": {}
     }

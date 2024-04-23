@@ -17,7 +17,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "provisional_password" (
+CREATE TABLE "provisional-passwords" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "provisional_password" TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE "provisional_password" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "provisional_password_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "provisional-passwords_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -74,13 +74,22 @@ CREATE TABLE "black-list-tokens" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
+CREATE INDEX "users_email_idx" ON "users"("email");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
 
+-- CreateIndex
+CREATE INDEX "profiles_document_idx" ON "profiles"("document");
+
 -- AddForeignKey
-ALTER TABLE "provisional_password" ADD CONSTRAINT "provisional_password_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "provisional-passwords" ADD CONSTRAINT "provisional-passwords_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "black-list-tokens" ADD CONSTRAINT "black-list-tokens_revoked_by_user_id_fkey" FOREIGN KEY ("revoked_by_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

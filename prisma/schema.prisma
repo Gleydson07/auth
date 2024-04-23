@@ -19,9 +19,12 @@ model User {
   updatedAt                               DateTime  @updatedAt @map("updated_at")
 
   profile Profile?
+  blackListTokens BlackListTokens[]
   provisionalPassword ProvisionalPassword[]
   address Address[]
+
   @@map("users")
+  @@index([email])
 }
 
 model ProvisionalPassword {
@@ -34,7 +37,7 @@ model ProvisionalPassword {
   updatedAt                               DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
-  @@map("provisional_password")
+  @@map("provisional-passwords")
 }
 
 model Profile {
@@ -49,7 +52,9 @@ model Profile {
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
+
   @@map("profiles")
+  @@index([document])
 }
 
 model Address {
@@ -74,6 +79,7 @@ model BlackListTokens {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  user User @relation(fields: [revokedByUserId], references: [id])
   @@map("black-list-tokens")
 }
 
