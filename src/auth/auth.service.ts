@@ -170,19 +170,23 @@ export class AuthService {
     try {
       const { login, password, provisionalPassword } = data;
 
-      const user = await this.usersService.findPasswordAndProvisionalPasswordByEmail(login);
+      const provPassword = await this.usersService.findPasswordAndProvisionalPasswordByEmail(login);
+
+      if (!provPassword) {
+        throw new Error("Solicite uma senha provisória para concluir a recuperação de senha.");
+      }
+
       const isMatch = await bcrypt.compare(
         provisionalPassword,
-        user.provisionalPassword[0].provisionalPassword
+        provPassword?.provisionalPassword
       );
 
       if (!isMatch) {
-        throw new HttpException("A senha provisória é incompatível.", HttpStatus.UNAUTHORIZED);
+        throw new Error("A senha provisória é incompatível.");
       }
 
-      const hash = await bcrypt.hash(password, SALT);
-      await this.usersService.updatePassword(user.email, hash);
-      this.usersService.disableProvisionalPasswordByUserId(user.id);
+      await this.usersService.updatePassword(provPassword.user.email, password);
+      this.usersService.disableProvisionalPasswordByUserId(provPassword.user.id);
     } catch (error) {
       console.error(error);
       throw new HttpException(error?.message || "Falha ao gerar nova senha!", HttpStatus.BAD_REQUEST);

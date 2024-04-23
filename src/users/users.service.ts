@@ -201,22 +201,20 @@ export class UsersService {
   }
 
   async findPasswordAndProvisionalPasswordByEmail(email: string) {
-    return await this.prismaService.user.findFirst({
+    return await this.prismaService.provisionalPassword.findFirst({
       where: {
-        email: email,
-        provisionalPassword: {
-          some: {
-            active: true
-          }
-        }
+        user: {
+          email: email,
+        },
+        active: true
       },
       select: {
-        id: true,
-        email: true,
-        password: true,
-        provisionalPassword: {
+        provisionalPassword: true,
+        user: {
           select: {
-            provisionalPassword: true
+            id: true,
+            email: true,
+            password: true,
           }
         }
       }
