@@ -26,7 +26,7 @@ model User {
 
 model ProvisionalPassword {
   id                                      Int       @id @default(autoincrement())
-  userId                                  Int       @unique @map("user_id")
+  userId                                  Int       @map("user_id")
   provisionalPassword                     String?   @map("provisional_password")
   active                                  Boolean?  @default(false) @map("active")
   expiresIn                               DateTime? @map("expires_in")

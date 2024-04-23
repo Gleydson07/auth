@@ -74,9 +74,6 @@ CREATE TABLE "black-list-tokens" (
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "provisional_password_user_id_key" ON "provisional_password"("user_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
 
 -- AddForeignKey
