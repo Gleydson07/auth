@@ -41,15 +41,15 @@ model ProvisionalPassword {
 }
 
 model Profile {
-  id               Int       @id @default(autoincrement())
-  userId           Int       @unique @map("user_id")
-  birthDay         DateTime? @map("birth_day")
-  phone            String?   @db.VarChar()
-  gender           String?   @db.VarChar()
-  document         String?   @db.VarChar()
-  documentType     String?   @db.VarChar() @map("document_type")
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
+  id               Int            @id @default(autoincrement())
+  userId           Int            @unique @map("user_id")
+  birthDay         DateTime?      @map("birth_day")
+  phone            String?        @db.VarChar()
+  gender           String?        @db.VarChar()
+  document         String         @db.VarChar()
+  documentType     DocTypeEnum    @map("document_type")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -86,4 +86,9 @@ model BlackListTokens {
 enum RoleEnum {
   USER
   ADMIN
+}
+
+enum DocTypeEnum {
+  RG
+  CPF
 }

@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "RoleEnum" AS ENUM ('USER', 'ADMIN');
 
+-- CreateEnum
+CREATE TYPE "DocTypeEnum" AS ENUM ('RG', 'CPF');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -36,8 +39,8 @@ CREATE TABLE "profiles" (
     "birth_day" TIMESTAMP(3),
     "phone" VARCHAR,
     "gender" VARCHAR,
-    "document" VARCHAR,
-    "document_type" VARCHAR,
+    "document" VARCHAR NOT NULL,
+    "document_type" "DocTypeEnum" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
