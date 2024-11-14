@@ -25,7 +25,7 @@ jobs:
           push: true
           tags: |
             gleydsondev/auth:latest
-            gleydsondev/auth:${{ github.run_number }}
+            gleydsondev/auth:v${{ github.run_number }}
 
   cd:
     runs-on: ubuntu-latest
