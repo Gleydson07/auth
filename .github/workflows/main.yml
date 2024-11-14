@@ -17,10 +17,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Construção da imagem Docker
-        run: echo "Executando o comando Docker build"
-      - name: Envio da imagem Docker
-        run: echo "Executando o comando Docker push"
+      - name: Construção e envio da imagem Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            gleydsondev/auth:latest
+            gleydsondev/auth:${{ github.run_number }}
 
   cd:
     runs-on: ubuntu-latest
