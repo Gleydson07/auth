@@ -23,10 +23,10 @@ COPY . .
 RUN npx prisma generate
 
 # Run seed
-# RUN npx prisma db seed
+RUN npx prisma db seed
 
 # Execute the migrations to database
-# RUN npx prisma migrate deploy
+RUN npx prisma migrate deploy
 
 
 FROM node:22.11.0-alpine3.20
