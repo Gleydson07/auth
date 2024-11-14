@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:20.04-alpine as development
+FROM node:22.11.0-alpine3.20 as development
 
 # Define environment as development
 ARG NODE_ENV=development
@@ -29,7 +29,7 @@ RUN npx prisma db seed
 RUN npx prisma migrate deploy
 
 
-FROM node:20.04-alpine
+FROM node:22.11.0-alpine3.20
 
 COPY --from=development /usr/src/app /usr/src/app
 
