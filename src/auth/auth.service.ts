@@ -9,8 +9,10 @@ import { BlackListService } from "@/auth/black-list/black-list.service";
 import { MailerService } from "@/mailer/mailer.service";
 import { SendMailDto } from "@/mailer/dto/send-mail.dto";
 import { templateFormatter } from "@/mailer/utils/replacer";
-import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
+import { templateRecoveryPassword } from "@/mailer/templates/recovery-password/recovery-password";
 import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
+import fs from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -22,9 +24,9 @@ export class AuthService {
     private configService: ConfigService
   ) { }
 
-  async signIn({ login, password: pass }: SignInAuthDto): Promise<any> {
+  async signIn({ email, password: pass }: SignInAuthDto): Promise<any> {
     try {
-      const user = await this.usersService.findOneByEmail(login);
+      const user = await this.usersService.findOneByEmail(email);
 
       if (!user?.id) {
         throw new UnauthorizedException('Usuário não autorizado.');
@@ -60,8 +62,10 @@ export class AuthService {
         )
       };
     } catch (error) {
-      console.error(error);
-      throw new HttpException("Falha ao efetuar login!", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error?.message ?? "Falha ao efetuar login!",
+        HttpStatus.UNAUTHORIZED
+      );
     }
   }
 
@@ -110,12 +114,14 @@ export class AuthService {
     }
   }
 
-  async signOut(token: string, args: string, user: UserFromToken): Promise<any> {
+  async signOut(token: string, user: UserFromToken): Promise<any> {
+    const args = "sign-out";
     return await this.revokeToken(token, args, user);
   }
 
-  async updatePassword(email: string, currentPassword: string, password: string) {
+  async updatePassword(data: UpdatePasswordDto) {
     try {
+      const { email, currentPassword, password } = data;
       const user = await this.usersService.findOneByEmail(email);
 
       const isMatch = await bcrypt.compare(
@@ -144,10 +150,11 @@ export class AuthService {
       const userSender = this.configService.get<string>("MAIL_DEFAULT_SENDER");
 
       const mailReplacements = {
-        user: `${user.name} ${user.lastname}`,
+        user: `${user.name} ${user.lastname.split(" ")[0]}`,
         hashProvisional: Math.random().toString(36).substring(0, 12),
         recoveryPasswordLink: this.configService.get<string>("MAIL_REDIRECT"),
-        companyName: this.configService.get<string>("MAIL_APP_NAME")
+        companyName: this.configService.get<string>("MAIL_APP_NAME"),
+        headerImage: this.configService.get<string>("MAIL_HEADER_IMAGE"),
       };
 
       const mailProps: SendMailDto = {
@@ -161,16 +168,15 @@ export class AuthService {
       await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
       this.mailerService.sendMail(mailProps);
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
     }
   }
 
   async recoveryPassword(data: RecoveryPasswordDto) {
     try {
-      const { login, password, provisionalPassword } = data;
+      const { email, password, provisionalPassword } = data;
 
-      const provPassword = await this.usersService.findPasswordAndProvisionalPasswordByEmail(login);
+      const provPassword = await this.usersService.findPasswordAndProvisionalPasswordByEmail(email);
 
       if (!provPassword) {
         throw new Error("Solicite uma senha provisória para concluir a recuperação de senha.");
@@ -188,7 +194,6 @@ export class AuthService {
       await this.usersService.updatePassword(provPassword.user.email, password);
       this.usersService.disableProvisionalPasswordByUserId(provPassword.user.id);
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao gerar nova senha!", HttpStatus.BAD_REQUEST);
     }
   }

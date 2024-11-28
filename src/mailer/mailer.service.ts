@@ -33,7 +33,7 @@ export class MailerService {
         html: sendMail.html
       });
     } catch (error) {
-      console.error(error);
+      console.log(error)
       throw new HttpException(error?.message || "Falha no envio de e-mail!", HttpStatus.BAD_REQUEST);
     }
   }

@@ -56,7 +56,6 @@ describe('UsersService', () => {
     .spyOn(service, "create")
     .mockResolvedValueOnce(user1);
 
-    const result = await service.create(user1);
-    console.log(result)
+    await service.create(user1);
   });
 });

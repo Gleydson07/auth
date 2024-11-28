@@ -140,16 +140,15 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    try {
-      const data = await this.prismaService.user.findFirst({
-        where: {
-          email: { equals: email },
-        }
-      });
-      return data;
-    } catch (error) {
-      throw new Error('Falha ao buscar usuário.')
-    }
+    const data = await this.prismaService.user.findUnique({
+      where: {
+        email: email.trim().toLowerCase(),
+      }
+    });
+
+    if (!data?.id) return null;
+
+    return data;
   }
 
   async generateProvisionalPassword(userId: number, password: string) {
@@ -172,17 +171,21 @@ export class UsersService {
   }
 
   async findExpiredProvisionalPassword(isActive?: boolean) {
-    return await this.prismaService.provisionalPassword.findMany({
-      where: {
-        active: isActive,
-        expiresIn: {
-          lte: new Date()
+    try {
+      return await this.prismaService.provisionalPassword.findMany({
+        where: {
+          active: isActive,
+          expiresIn: {
+            lte: new Date()
+          }
+        },
+        select: {
+          id: true
         }
-      },
-      select: {
-        id: true
-      }
-    })
+      });
+    } catch (error) {
+      throw new BadRequestException("Falha ao localizar usuários com senhas provisórias.");
+    }
   }
 
   async disableProvisionalPasswordByUserId(userId: number) {
@@ -201,24 +204,28 @@ export class UsersService {
   }
 
   async findPasswordAndProvisionalPasswordByEmail(email: string) {
-    return await this.prismaService.provisionalPassword.findFirst({
-      where: {
-        user: {
-          email: email,
+    try {
+      return await this.prismaService.provisionalPassword.findFirst({
+        where: {
+          user: {
+            email: email,
+          },
+          active: true
         },
-        active: true
-      },
-      select: {
-        provisionalPassword: true,
-        user: {
-          select: {
-            id: true,
-            email: true,
-            password: true,
+        select: {
+          provisionalPassword: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              password: true,
+            }
           }
         }
-      }
-    });
+      });
+    } catch (error) {
+      throw new BadRequestException("Falha ao validar acesso provisório do usuário.");
+    }
   }
 
   async disableProvisionalPasswordByIds(ids: number[]) {

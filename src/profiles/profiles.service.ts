@@ -36,7 +36,6 @@ export class ProfilesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao cadastrar perfil!", HttpStatus.BAD_REQUEST);
     }
   }

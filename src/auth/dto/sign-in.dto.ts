@@ -3,7 +3,7 @@ import { Auth } from "../entities/auth.entity"
 
 export class SignInAuthDto extends Auth{
   @IsString()
-  login: string
+  email: string
 
   @IsString()
   password: string

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpCode, Delete, UseGuards, Req, Headers, Param, Put } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Delete, UseGuards, Param, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInAuthDto } from './dto/sign-in.dto';
 import { User } from "@/utils/decorators/user-extract-auth.decorator";
@@ -41,8 +41,7 @@ export class AuthController {
   @HttpCode(204)
   @Put('/password')
   ChangePassword(@Body() data: UpdatePasswordDto) {
-    const { login, currentPassword, password } = data;
-    return this.authService.updatePassword(login, currentPassword, password);
+    return this.authService.updatePassword(data);
   }
 
   @UseGuards(AuthGuard, OnlyAdminGuard)
@@ -59,7 +58,6 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('sign-out')
   signOut(@Token() token: string, @User() user: UserFromToken) {
-    const args = "sign-out";
-    this.authService.signOut(token, args, user);
+    this.authService.signOut(token, user);
   }
 }

@@ -31,7 +31,6 @@ export class AddressesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao cadastrar endereço!", HttpStatus.BAD_REQUEST);
     }
   }
@@ -57,7 +56,6 @@ export class AddressesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao consultar endereços!", HttpStatus.BAD_REQUEST);
     }
   }
@@ -86,7 +84,6 @@ export class AddressesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao consultar endereço!", HttpStatus.BAD_REQUEST);
     }
   }
@@ -124,7 +121,6 @@ export class AddressesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao atualizar endereço!", HttpStatus.BAD_REQUEST);
     }
   }
@@ -155,7 +151,6 @@ export class AddressesService {
         }
       });
     } catch (error) {
-      console.error(error);
       throw new HttpException(error?.message || "Falha ao remover endereço!", HttpStatus.BAD_REQUEST);
     }
   }

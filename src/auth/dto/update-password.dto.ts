@@ -2,7 +2,7 @@ import { IsString } from "class-validator"
 
 export class UpdatePasswordDto {
   @IsString()
-  login: string
+  email: string
 
   @IsString()
   currentPassword: string

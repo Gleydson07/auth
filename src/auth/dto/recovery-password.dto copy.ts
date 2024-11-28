@@ -2,7 +2,7 @@ import { IsString } from "class-validator"
 
 export class RecoveryPasswordDto {
   @IsString()
-  login: string
+  email: string
 
   @IsString()
   password: string
