@@ -9,7 +9,7 @@ import { BlackListService } from "@/auth/black-list/black-list.service";
 import { MailerService } from "@/mailer/mailer.service";
 import { SendMailDto } from "@/mailer/dto/send-mail.dto";
 import { templateFormatter } from "@/mailer/utils/replacer";
-import { templateRecoveryPassword } from "@/mailer/templates/recovery-password/recovery-password";
+import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
 import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 import fs from 'fs';
