@@ -37,7 +37,7 @@ model ProvisionalPassword {
   updatedAt                               DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
-  @@map("provisional-passwords")
+  @@map("provisional_passwords")
 }
 
 model Profile {
@@ -65,6 +65,7 @@ model Address {
   number       String?  @db.VarChar()
   city         String   @db.VarChar()
   country      String   @db.VarChar()
+  zipCode      String   @db.VarChar()
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -73,14 +74,14 @@ model Address {
 }
 
 model BlackListTokens {
-  token           String   @id @db.VarChar()
+  token           String   @id() @db.VarChar()
   revokedByUserId Int      @map("revoked_by_user_id")
   args            String   @db.VarChar(200)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [revokedByUserId], references: [id])
-  @@map("black-list-tokens")
+  @@map("black_list_tokens")
 }
 
 enum RoleEnum {
@@ -91,4 +92,5 @@ enum RoleEnum {
 enum DocTypeEnum {
   RG
   CPF
+  CNH
 }

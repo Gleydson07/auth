@@ -27,7 +27,8 @@ export class AddressesService {
           street: createAddress?.street,
           number: createAddress?.number,
           city: createAddress.city,
-          country: createAddress.country
+          country: createAddress.country,
+          zipCode: createAddress.zipCode,
         }
       });
     } catch (error) {
@@ -117,7 +118,8 @@ export class AddressesService {
           street: updateAddress?.street,
           number: updateAddress?.number,
           city: updateAddress?.city,
-          country: updateAddress?.country
+          country: updateAddress?.country,
+          zipCode: updateAddress?.zipCode,
         }
       });
     } catch (error) {

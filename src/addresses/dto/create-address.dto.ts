@@ -18,4 +18,7 @@ export class CreateAddressDto extends Address {
 
   @IsString()
   country: string
+
+  @IsString()
+  zipCode: string
 }

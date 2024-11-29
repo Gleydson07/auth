@@ -26,7 +26,7 @@ export class AuthService {
 
   async signIn({ email, password: pass }: SignInAuthDto): Promise<any> {
     try {
-      const user = await this.usersService.findOneByEmail(email);
+      const user = await this.usersService.findOneByEmail({email, active: true });
 
       if (!user?.id) {
         throw new UnauthorizedException('Usuário não autorizado.');
@@ -108,9 +108,15 @@ export class AuthService {
 
   async revokeToken(token: string, args: string, user: UserFromToken): Promise<any> {
     try {
+      const tokenAlreadyExists = await this.blackListService.exists(token);
+
+      if (tokenAlreadyExists) {
+        throw new HttpException("O token informado já está revogado!", HttpStatus.BAD_REQUEST);
+      }
+
       return this.blackListService.create({ token, args, revokedByUserId: user.sub })
     } catch (error) {
-      throw new HttpException("Falha revogar token!", HttpStatus.BAD_REQUEST);
+      throw new HttpException(error?.message ?? "Falha revogar token!", HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -119,10 +125,14 @@ export class AuthService {
     return await this.revokeToken(token, args, user);
   }
 
-  async updatePassword(data: UpdatePasswordDto) {
+  async updatePassword(data: UpdatePasswordDto, email: string) {
     try {
-      const { email, currentPassword, password } = data;
-      const user = await this.usersService.findOneByEmail(email);
+      const { currentPassword, password } = data;
+      const user = await this.usersService.findOneByEmail({ email, active: true});
+
+      if (!user) {
+        throw new HttpException("Náo foi possível identificar o usuário.", HttpStatus.BAD_REQUEST);
+      }
 
       const isMatch = await bcrypt.compare(
         currentPassword,
@@ -141,7 +151,7 @@ export class AuthService {
 
   async sendEmailToRecoveryPassword(email: string) {
     try {
-      const user = await this.usersService.findOneByEmail(email);
+      const user = await this.usersService.findOneByEmail({email, active: true });
 
       if (!user || user && !user?.active) {
         throw new Error("Usuário não existe.");
@@ -179,7 +189,7 @@ export class AuthService {
       const provPassword = await this.usersService.findPasswordAndProvisionalPasswordByEmail(email);
 
       if (!provPassword) {
-        throw new Error("Solicite uma senha provisória para concluir a recuperação de senha.");
+        throw new Error("Solicite uma nova senha provisória para concluir a recuperação de senha.");
       }
 
       const isMatch = await bcrypt.compare(

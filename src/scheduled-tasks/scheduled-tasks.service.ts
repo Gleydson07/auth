@@ -12,7 +12,7 @@ export class ScheduledTasksService {
     await this.userService.disableProvisionalPasswordByIds(expiredTasks.map(data => data.id));
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
   async handleDeleteProvisionalPassword() {
     const disabledTasks = await this.userService.findExpiredProvisionalPassword(false);
     await this.userService.deleteProvisionalPasswordByIds(disabledTasks.map(data => data.id));

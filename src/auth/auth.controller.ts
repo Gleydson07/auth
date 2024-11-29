@@ -40,8 +40,11 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @HttpCode(204)
   @Put('/password')
-  ChangePassword(@Body() data: UpdatePasswordDto) {
-    return this.authService.updatePassword(data);
+  ChangePassword(
+    @Body() data: UpdatePasswordDto,
+    @User() user: UserFromToken
+  ) {
+    return this.authService.updatePassword(data, user.email);
   }
 
   @UseGuards(AuthGuard, OnlyAdminGuard)

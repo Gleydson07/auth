@@ -31,12 +31,18 @@ export class UsersController {
   }
 
   @UseGuards(OnlyAdminGuard)
-  @Post("/:userId/enable")
+  @HttpCode(200)
+  @Post("/:userId/active/:active")
   active(
     @Param("userId") userId: number,
+    @Param("active") active: string,
     @User() user: UserFromToken
   ) {
-    return this.usersService.changeActive(user, +userId);
+    return this.usersService.changeActive(
+      user,
+      active === "true" ? true : false,
+      +userId
+    );
   }
 
   @Get()
@@ -56,13 +62,6 @@ export class UsersController {
     @User() user: UserFromToken
   ) {
     return this.usersService.update(user, +id, updateUserDto);
-  }
-
-  @UseGuards(OnlyAdminGuard)
-  @HttpCode(204)
-  @Put('/admin/status')
-  updateDefaultProfile(@Body() data: {active: boolean}) {
-    return this.usersService.updateUserAdmin(data);
   }
 
   @UseGuards(OnlyAdminGuard)

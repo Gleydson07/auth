@@ -6,6 +6,8 @@ import { PrismaService } from "@/database/Prisma/prisma.service";
 import { UserFromToken } from "@/auth/dto/token-payload.dto";
 import { RoleEnum } from "@prisma/client";
 import { BlackListService } from "@/auth/black-list/black-list.service";
+import { ConfigService } from "@nestjs/config";
+import { FindByEmailDto } from "./dto/find-by-email-user.dto";
 
 export const SALT = 12;
 
@@ -14,11 +16,12 @@ export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly blackListService: BlackListService,
+    private configService: ConfigService
   ) { }
 
   async create(data: CreateUserDto) {
     try {
-      const userAlreadyExists = await this.findOneByEmail(data.email);
+      const userAlreadyExists = await this.findOneByEmail({ email: data.email });
 
       if (userAlreadyExists) {
         throw new Error("Usuário já existe.");
@@ -45,6 +48,12 @@ export class UsersService {
 
   async changeRole(user: UserFromToken, role: RoleEnum, userId: number) {
     try {
+      const roleSanitized = role.trim().toUpperCase() as RoleEnum;
+      const isValidRole = Object.values(RoleEnum).includes(roleSanitized);
+      if (!isValidRole) {
+        throw new Error("Role inválida.");
+      }
+
       const userToUpdateRole = await this.findOneActiveById(userId);
 
       if (!userToUpdateRole) {
@@ -60,7 +69,7 @@ export class UsersService {
           id: userId,
         },
         data: {
-          role: role
+          role: roleSanitized
         },
       });
     } catch (error) {
@@ -68,7 +77,7 @@ export class UsersService {
     }
   }
 
-  async changeActive(user: UserFromToken, userId: number) {
+  async changeActive(user: UserFromToken, status: boolean, userId: number) {
     try {
       const userToUpdateRole = await this.findOneById(userId);
 
@@ -85,7 +94,7 @@ export class UsersService {
           id: userId,
         },
         data: {
-          active: true
+          active: status
         },
       });
     } catch (error) {
@@ -139,10 +148,11 @@ export class UsersService {
     });
   }
 
-  async findOneByEmail(email: string) {
+  async findOneByEmail({email, active}: FindByEmailDto) {
     const data = await this.prismaService.user.findUnique({
       where: {
         email: email.trim().toLowerCase(),
+        active: active
       }
     });
 
@@ -162,7 +172,12 @@ export class UsersService {
           active: true,
           provisionalPassword: hash,
           userId: userId,
-          expiresIn: new Date(currentDate.setMinutes(currentDate.getMinutes() + 5))
+          expiresIn: new Date(
+            currentDate.setMinutes(
+              currentDate.getMinutes() +
+              Number(this.configService.get<string>("USER_EXPIRES_PROVISIONAL_PASSWORD_IN_MINUTES") ?? 5)
+            )
+          )
         }
       });
     } catch (error) {
@@ -277,12 +292,12 @@ export class UsersService {
       await this.checkIsUserAdminOrSameId({
         userId: id,
         userIdFromToken: user.sub,
-        messageError: "Não é permitido alterar o cadastro de terceiros."
-      })
+        messageError: "Não é permitido alterar o cadastro de terceiros.",
+      });
 
       await this.prismaService.user.update({
         where: {
-          id,
+          id: id,
           active: true
         },
         data: {
@@ -318,7 +333,7 @@ export class UsersService {
     }
   }
 
-  async updateUserAdmin({ active }: {active: boolean}) {
+  async updateUserAdmin(active: boolean) {
     return await this.prismaService.user.update({
       where: {
         email: "admin@admin.com"
@@ -332,9 +347,13 @@ export class UsersService {
   async checkIsUserAdminOrSameId(props: {
     userId: number,
     userIdFromToken: number,
-    messageError: string
+    messageError: string,
   }) {
     const userFound = await this.findOneById(+props.userIdFromToken);
+
+    if (!userFound?.active) {
+      throw new Error("O usuário deve estar ativo.");
+    }
 
     if (Number(props.userIdFromToken) !== Number(props.userId) && userFound?.role !== RoleEnum.ADMIN) {
       throw new Error(props.messageError);
