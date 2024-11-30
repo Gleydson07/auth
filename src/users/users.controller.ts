@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, HttpCode, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,6 +8,7 @@ import { UserFromToken } from "@/auth/dto/token-payload.dto";
 import { RoleEnum } from "@prisma/client";
 import { OnlyAdminGuard } from "@/auth/guards/only-admin.guard";
 import { Token } from "@/utils/decorators/token-extract-auth.decorator";
+import { parseBooleanOrUndefined } from "@/utils/functions/parseBoolean";
 
 @UseGuards(AuthGuard)
 @Controller('')
@@ -46,13 +47,15 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query("active") active?: string) {
+    const isActive = parseBooleanOrUndefined(active);
+    return this.usersService.findAll(isActive);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOneActiveById(+id);
+  findOne(@Param('id') id: string, @Query("active") active: string) {
+    const isActive = parseBooleanOrUndefined(active);
+    return this.usersService.findOneById(+id, isActive);
   }
 
   @Put(':id')

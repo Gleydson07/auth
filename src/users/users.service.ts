@@ -54,7 +54,7 @@ export class UsersService {
         throw new Error("Role inválida.");
       }
 
-      const userToUpdateRole = await this.findOneActiveById(userId);
+      const userToUpdateRole = await this.findOneById(userId);
 
       if (!userToUpdateRole) {
         throw new Error("Usuário não encontrado.");
@@ -77,7 +77,7 @@ export class UsersService {
     }
   }
 
-  async changeActive(user: UserFromToken, status: boolean, userId: number) {
+  async changeActive(user: UserFromToken, active: boolean, userId: number) {
     try {
       const userToUpdateRole = await this.findOneById(userId);
 
@@ -94,7 +94,7 @@ export class UsersService {
           id: userId,
         },
         data: {
-          active: status
+          active: active
         },
       });
     } catch (error) {
@@ -102,25 +102,12 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(active?: boolean) {
+    console.log(active)
     return await this.prismaService.user.findMany({
       where: {
-        active: true
+        active: active
       },
-      select: {
-        id: true,
-        name: true,
-        lastname: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      }
-    });
-  }
-
-  async findOneById(id: number) {
-    return await this.prismaService.user.findUnique({
-      where: { id: id },
       select: {
         id: true,
         name: true,
@@ -133,9 +120,9 @@ export class UsersService {
     });
   }
 
-  async findOneActiveById(id: number) {
+  async findOneById(id: number, active?: boolean) {
     return await this.prismaService.user.findUnique({
-      where: { id: id, active: true },
+      where: { id: id, active: active },
       select: {
         id: true,
         name: true,
@@ -306,13 +293,14 @@ export class UsersService {
         },
       });
     } catch (error) {
+      console.log(error.message)
       throw new HttpException(error.message || "Falha ao atualizar dados do usuário.", HttpStatus.BAD_REQUEST);
     }
   }
 
   async remove(user: UserFromToken, token: string, id: number) {
     try {
-      const userToUpdateRole = await this.findOneActiveById(+id);
+      const userToUpdateRole = await this.findOneById(+id);
 
       if (!userToUpdateRole) {
         throw new Error("Usuário não encontrado.");
@@ -351,12 +339,17 @@ export class UsersService {
   }) {
     const userFound = await this.findOneById(+props.userIdFromToken);
 
+    if (!userFound?.id) {
+      throw new HttpException("Usuário inválido.", HttpStatus.BAD_REQUEST);
+    }
+
     if (!userFound?.active) {
-      throw new Error("O usuário deve estar ativo.");
+      throw new HttpException("O usuário deve estar ativo.", HttpStatus.BAD_REQUEST);
     }
 
     if (Number(props.userIdFromToken) !== Number(props.userId) && userFound?.role !== RoleEnum.ADMIN) {
-      throw new Error(props.messageError);
+      console.log("caiu")
+      throw new HttpException(props.messageError, HttpStatus.BAD_REQUEST);
     }
   }
 }

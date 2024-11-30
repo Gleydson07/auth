@@ -153,8 +153,12 @@ export class AuthService {
     try {
       const user = await this.usersService.findOneByEmail({email, active: true });
 
-      if (!user || user && !user?.active) {
-        throw new Error("Usuário não existe.");
+      if (!user) {
+        throw new HttpException("Usuário não existe.", HttpStatus.BAD_REQUEST);
+      }
+
+      if (!user?.active) {
+        throw new HttpException("Não é possível recuperar a senha de usuários inativos.", HttpStatus.BAD_REQUEST);
       }
 
       const userSender = this.configService.get<string>("MAIL_DEFAULT_SENDER");
