@@ -12,7 +12,9 @@ import { templateFormatter } from "@/mailer/utils/replacer";
 import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
 import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
-import fs from 'fs';
+import * as crypto from 'crypto';
+import { generateProvisionalPasswordHash } from "@/utils/functions/generateProvisionalPasswordHash";
+
 
 @Injectable()
 export class AuthService {
@@ -154,7 +156,7 @@ export class AuthService {
       const user = await this.usersService.findOneByEmail({email, active: true });
 
       if (!user) {
-        throw new HttpException("Usuário não existe.", HttpStatus.BAD_REQUEST);
+        throw new HttpException("Usuário não localizado.", HttpStatus.BAD_REQUEST);
       }
 
       if (!user?.active) {
@@ -165,7 +167,7 @@ export class AuthService {
 
       const mailReplacements = {
         user: `${user.name} ${user.lastname.split(" ")[0]}`,
-        hashProvisional: Math.random().toString(36).substring(0, 12),
+        hashProvisional: generateProvisionalPasswordHash(12),
         recoveryPasswordLink: this.configService.get<string>("MAIL_REDIRECT"),
         companyName: this.configService.get<string>("MAIL_APP_NAME"),
         headerImage: this.configService.get<string>("MAIL_HEADER_IMAGE"),

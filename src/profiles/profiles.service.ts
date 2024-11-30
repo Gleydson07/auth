@@ -13,6 +13,10 @@ export class ProfilesService {
 
   async create(userId: number, userIdFromToken: number, createProfile: CreateProfileDto) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: userId,
         userIdFromToken: userIdFromToken,
@@ -75,7 +79,7 @@ export class ProfilesService {
         }
       });
     } catch (error) {
-      throw new HttpException("Falha ao alterar perfil!", HttpStatus.BAD_REQUEST);
+      throw new HttpException(error?.message ?? "Falha ao alterar perfil!", HttpStatus.BAD_REQUEST);
     }
   }
 

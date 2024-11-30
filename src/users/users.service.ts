@@ -8,6 +8,7 @@ import { RoleEnum } from "@prisma/client";
 import { BlackListService } from "@/auth/black-list/black-list.service";
 import { ConfigService } from "@nestjs/config";
 import { FindByEmailDto } from "./dto/find-by-email-user.dto";
+import { generateProvisionalPasswordHash } from "@/utils/functions/generateProvisionalPasswordHash";
 
 export const SALT = 12;
 
@@ -115,6 +116,9 @@ export class UsersService {
         active: true,
         role: true,
         createdAt: true,
+      },
+      orderBy: {
+        name: "asc"
       }
     });
   }
@@ -296,7 +300,7 @@ export class UsersService {
     }
   }
 
-  async remove(user: UserFromToken, token: string, id: number) {
+  async remove(id: number) {
     try {
       const userToUpdateRole = await this.findOneById(+id);
 
@@ -304,16 +308,15 @@ export class UsersService {
         throw new Error("Usuário não encontrado.");
       }
 
-      await this.prismaService.user.update({
+      return this.prismaService.user.update({
         where: {
           id: +id
         },
         data: {
-          active: false
+          active: false,
+          password: generateProvisionalPasswordHash(12)
         }
       });
-
-      return this.blackListService.create({token, args: "delete-account", revokedByUserId: user.sub})
     } catch (error) {
       throw new HttpException(error.message || "Falha ao remover usuário.", HttpStatus.BAD_REQUEST);
     }

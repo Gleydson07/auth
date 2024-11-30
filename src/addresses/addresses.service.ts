@@ -14,6 +14,10 @@ export class AddressesService {
 
   async create(userId: number, user: UserFromToken, createAddress: CreateAddressDto) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
@@ -38,6 +42,10 @@ export class AddressesService {
 
   async findAll(userId: number, user: UserFromToken) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
@@ -63,6 +71,14 @@ export class AddressesService {
 
   async findOne(userId: number, addressId: number, user: UserFromToken) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
+      if (!addressId) {
+        throw new Error("Id do endereço não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
@@ -91,6 +107,14 @@ export class AddressesService {
 
   async update(user: UserFromToken, userId: number, addressId: number, updateAddress: UpdateAddressDto) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
+      if (!addressId) {
+        throw new Error("Id do endereço não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
@@ -129,6 +153,14 @@ export class AddressesService {
 
   async remove(user: UserFromToken, userId: number, addressId: number) {
     try {
+      if (!userId) {
+        throw new Error("Id do usuário não informado.");
+      }
+
+      if (!addressId) {
+        throw new Error("Id do endereço não informado.");
+      }
+
       await this.userService.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,

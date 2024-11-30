@@ -72,9 +72,7 @@ export class UsersController {
   @Delete(':id')
   remove(
     @Param('id') id: string,
-    @User() user: UserFromToken,
-    @Token() token: string,
   ) {
-    return this.usersService.remove(user, token, +id);
+    return this.usersService.remove(+id);
   }
 }
