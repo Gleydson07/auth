@@ -103,7 +103,6 @@ export class UsersService {
   }
 
   async findAll(active?: boolean) {
-    console.log(active)
     return await this.prismaService.user.findMany({
       where: {
         active: active
@@ -293,7 +292,6 @@ export class UsersService {
         },
       });
     } catch (error) {
-      console.log(error.message)
       throw new HttpException(error.message || "Falha ao atualizar dados do usuário.", HttpStatus.BAD_REQUEST);
     }
   }
@@ -348,7 +346,6 @@ export class UsersService {
     }
 
     if (Number(props.userIdFromToken) !== Number(props.userId) && userFound?.role !== RoleEnum.ADMIN) {
-      console.log("caiu")
       throw new HttpException(props.messageError, HttpStatus.BAD_REQUEST);
     }
   }
