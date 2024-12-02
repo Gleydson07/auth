@@ -26,9 +26,9 @@ services:
     env_file:
       - .env
     networks:
-      - app_auth_network 
+      - app_auth_network
 
- postgres:
+  postgres:
     container_name: postgres
     image: postgres:17.0
     environment:
@@ -55,7 +55,6 @@ services:
     networks:
       - app_auth_network
     restart: always
-
 
 volumes:
   postgres_data:
