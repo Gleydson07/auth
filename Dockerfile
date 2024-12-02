@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:22.11.0-alpine3.20 as development
+FROM node:22.11.0-alpine3.20 AS development
 
 # Define environment as development
 ARG NODE_ENV=development
@@ -42,4 +42,4 @@ EXPOSE 3000
 
 # Command to run the application
 ENTRYPOINT [ "npm" ]
-CMD ["run", "start"]
+CMD ["run", "start:prod"]

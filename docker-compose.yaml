@@ -11,12 +11,16 @@ services:
     ports:
       - '${PG_PORT}:5432'
     volumes:
-      - /data/postgres:/data/postgres
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     networks:
-      - postgres
+      - app_auth_network
+
+volumes:
+  postgres_data:
+    driver: local
 
 networks:
-  postgres:
+  app_auth_network:
     driver: bridge
