@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id                                      Int       @id @default(autoincrement())
+  id                                      Int       @id() @default(autoincrement())
   name                                    String    @db.VarChar()
   lastname                                String    @db.VarChar()
   email                                   String    @unique() @db.VarChar()
@@ -16,7 +16,7 @@ model User {
   active                                  Boolean?  @default(true)
   role                                    RoleEnum  @map("role") @default(USER)
   createdAt                               DateTime  @default(now()) @map("created_at")
-  updatedAt                               DateTime  @updatedAt @map("updated_at")
+  updatedAt                               DateTime  @updatedAt() @map("updated_at")
 
   profile Profile?
   blackListTokens BlackListTokens[]
@@ -25,31 +25,32 @@ model User {
 
   @@map("users")
   @@index([email])
+  @@unique([id, active])
 }
 
 model ProvisionalPassword {
-  id                                      Int       @id @default(autoincrement())
+  id                                      Int       @id() @default(autoincrement())
   userId                                  Int       @map("user_id")
   provisionalPassword                     String?   @map("provisional_password")
   active                                  Boolean?  @default(false) @map("active")
   expiresIn                               DateTime? @map("expires_in")
   createdAt                               DateTime  @default(now()) @map("created_at")
-  updatedAt                               DateTime  @updatedAt @map("updated_at")
+  updatedAt                               DateTime  @updatedAt() @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
   @@map("provisional_passwords")
 }
 
 model Profile {
-  id               Int            @id @default(autoincrement())
-  userId           Int            @unique @map("user_id")
+  id               Int            @id() @default(autoincrement())
+  userId           Int            @unique() @map("user_id")
   birthDay         DateTime?      @map("birth_day")
   phone            String?        @db.VarChar()
   gender           String?        @db.VarChar()
   document         String         @db.VarChar()
   documentType     DocTypeEnum    @map("document_type")
   createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @updatedAt @map("updated_at")
+  updatedAt        DateTime       @updatedAt() @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -58,7 +59,7 @@ model Profile {
 }
 
 model Address {
-  id           Int      @id @default(autoincrement())
+  id           Int      @id() @default(autoincrement())
   userId       Int      @map("user_id")
   neighborhood String   @db.VarChar()
   street       String?  @db.VarChar()
@@ -67,7 +68,7 @@ model Address {
   country      String   @db.VarChar()
   zipCode      String   @db.VarChar()
   createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  updatedAt    DateTime @updatedAt() @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
   @@map("addresses")
@@ -78,7 +79,7 @@ model BlackListTokens {
   revokedByUserId Int      @map("revoked_by_user_id")
   args            String   @db.VarChar(200)
   createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  updatedAt       DateTime @updatedAt() @map("updated_at")
 
   user User @relation(fields: [revokedByUserId], references: [id])
   @@map("black_list_tokens")

@@ -22,6 +22,7 @@ export class UsersController {
   }
 
   @UseGuards(OnlyAdminGuard)
+  @HttpCode(200)
   @Post("/:userId/roles/:role")
   role(
     @Param("role") role: RoleEnum,

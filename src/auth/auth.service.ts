@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@n
 import { SignInAuthDto } from "./dto/sign-in.dto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
-import { SALT, UsersService } from "@/users/users.service";
+import { UsersService } from "@/users/users.service";
 import { UserFromToken } from "./dto/token-payload.dto";
 import { BlackListService } from "@/auth/black-list/black-list.service";
 import { MailerService } from "@/mailer/mailer.service";
@@ -12,7 +12,6 @@ import { templateFormatter } from "@/mailer/utils/replacer";
 import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
 import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
-import * as crypto from 'crypto';
 import { generateProvisionalPasswordHash } from "@/utils/functions/generateProvisionalPasswordHash";
 
 
@@ -237,9 +236,5 @@ export class AuthService {
 
       throw new UnauthorizedException(error);
     }
-  }
-
-  private async jwtDecode(token: string) {
-    return await this.jwtService.decode(token);
   }
 }

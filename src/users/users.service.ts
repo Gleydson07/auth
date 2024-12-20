@@ -291,8 +291,8 @@ export class UsersService {
           active: true
         },
         data: {
-          name: updateUserDto.name,
-          lastname: updateUserDto.lastname
+          name: updateUserDto?.name,
+          lastname: updateUserDto?.lastname
         },
       });
     } catch (error) {
