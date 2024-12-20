@@ -12,12 +12,21 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { AddressesModule } from "./addresses/addresses.module";
 import { MailerModule } from './mailer/mailer.module';
 import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
+import { GraphQLModule } from "@nestjs/graphql";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { join } from "path";
 
 export const prefix = 'ms-auth/api/v1'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: true,
+    }),
     ScheduleModule.forRoot(),
     DatabaseModule,
     AuthModule,
