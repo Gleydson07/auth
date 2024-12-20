@@ -16,7 +16,6 @@ export const SALT = 12;
 export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly blackListService: BlackListService,
     private configService: ConfigService
   ) { }
 
