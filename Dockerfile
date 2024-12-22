@@ -19,6 +19,9 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Instalar OpenSSL atualizado
+RUN apk add --no-cache openssl
+
 # Generate database table structure
 RUN npx prisma generate
 
