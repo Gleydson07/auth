@@ -10,7 +10,13 @@ import { UserGraphqlResolver } from "./graphQL/users/user.gql.resolver";
 @Module({
   imports: [ConfigModule,],
   controllers: [UsersController],
-  providers: [UsersService, JwtService, BlackListService, UserGraphqlResolver, UserGraphqlService],
+  providers: [
+    UsersService,
+    JwtService,
+    BlackListService,
+    UserGraphqlResolver,
+    UserGraphqlService
+  ],
   exports: [UsersService]
 })
 export class UsersModule { }

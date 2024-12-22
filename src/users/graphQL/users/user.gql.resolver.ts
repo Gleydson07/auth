@@ -10,7 +10,7 @@ import { UseGuards } from "@nestjs/common";
 export class UserGraphqlResolver {
   constructor(private readonly userGraphqlService: UserGraphqlService) {}
 
-  // @Mutation(() => User)
+  @Mutation(() => User, { name: "create" })
   createUser(@Args('createUser') createUserGraphqlInput: CreateUserDto) {
     return this.userGraphqlService.create(createUserGraphqlInput);
   }

@@ -33,7 +33,7 @@ export class UserGraphqlService {
         },
       });
 
-      const { password, active, ...response } = result;
+      const { password, ...response } = result;
 
       return response;
     } catch (error) {
@@ -46,7 +46,8 @@ export class UserGraphqlService {
       where: {
         name: {
           contains: name
-        }
+        },
+        active: true
       },
       select: {
         id: true,
