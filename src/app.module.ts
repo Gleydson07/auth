@@ -25,6 +25,7 @@ export const prefix = 'ms-auth/api/v1'
       context: ({ req }) => ({ req }),
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'graphQL/schema.gql'),
+      path: `${prefix}/graphql`,
       sortSchema: true,
       playground: true,
       debug: true,
