@@ -22,6 +22,7 @@ export const prefix = 'ms-auth/api/v1'
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      context: ({ req }) => ({ req }),
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'graphQL/schema.gql'),
       sortSchema: true,
