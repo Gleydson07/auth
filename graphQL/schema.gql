@@ -31,8 +31,7 @@ type Profile {
 }
 
 type Query {
-  getHello: String!
-  users(name: String): [User!]!
+  findAll(name: String): [User!]!
 }
 
 type User {

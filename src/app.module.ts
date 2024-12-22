@@ -15,7 +15,6 @@ import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { join } from "path";
-import { UsersGraphQLResolver } from "./users/graphQL/users/resolver.user";
 
 export const prefix = 'ms-auth/api/v1'
 
@@ -27,6 +26,7 @@ export const prefix = 'ms-auth/api/v1'
       autoSchemaFile: join(process.cwd(), 'graphQL/schema.gql'),
       sortSchema: true,
       playground: true,
+      debug: true,
     }),
     ScheduleModule.forRoot(),
     DatabaseModule,
@@ -52,7 +52,6 @@ export const prefix = 'ms-auth/api/v1'
   controllers: [AppController],
   providers: [
     AppService,
-    UsersGraphQLResolver,
   ],
 })
 export class AppModule { }

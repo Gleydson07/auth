@@ -13,6 +13,7 @@ import { Request } from 'express';
 import { Reflector } from "@nestjs/core";
 import { IS_PUBLIC_KEY } from "@/utils/decorators/skip-auth.decorator";
 import { BlackListService } from "@/auth/black-list/black-list.service";
+import { GqlExecutionContext } from "@nestjs/graphql";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -33,7 +34,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = this.getRequest(context);
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
@@ -61,7 +62,16 @@ export class AuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const [type, token] = request?.headers?.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private getRequest(context: ExecutionContext): Request {
+    if (context.getType() === 'http') {
+      return context.switchToHttp().getRequest<Request>();
+    }
+
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
   }
 }

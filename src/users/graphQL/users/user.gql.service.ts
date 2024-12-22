@@ -1,16 +1,14 @@
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from "@/database/Prisma/prisma.service";
-import { Args, Query, Resolver } from "@nestjs/graphql";
 import { CreateUserDto } from "@/users/dto/create-user.dto";
 import { UsersService } from "@/users/users.service";
 import { User } from "@/users/entities/user.entity";
 
 export const SALT = 12;
 
-@Resolver()
 @Injectable()
-export class UsersGraphQLResolver {
+export class UserGraphqlService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly userService: UsersService,
@@ -43,8 +41,7 @@ export class UsersGraphQLResolver {
     }
   }
 
-  @Query(() => [User])
-  async users(@Args('name', { nullable: true }) name?: string): Promise<User[]> {
+  async findAll(name?: string): Promise<User[]> {
     return this.prismaService.user.findMany({
       where: {
         name: {
@@ -65,21 +62,6 @@ export class UsersGraphQLResolver {
       },
       orderBy: {
         name: "asc"
-      }
-    });
-  }
-
-  async findOneById(id: number, active?: boolean) {
-    return await this.prismaService.user.findUnique({
-      where: { id: id, active: active },
-      select: {
-        id: true,
-        name: true,
-        lastname: true,
-        email: true,
-        active: true,
-        role: true,
-        createdAt: true,
       }
     });
   }

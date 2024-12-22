@@ -7,7 +7,6 @@ import { User } from "@/utils/decorators/user-extract-auth.decorator";
 import { UserFromToken } from "@/auth/dto/token-payload.dto";
 import { RoleEnum } from "@prisma/client";
 import { OnlyAdminGuard } from "@/auth/guards/only-admin.guard";
-import { Token } from "@/utils/decorators/token-extract-auth.decorator";
 import { parseBooleanOrUndefined } from "@/utils/functions/parseBoolean";
 
 @UseGuards(AuthGuard)
