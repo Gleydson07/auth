@@ -21,7 +21,7 @@ services:
       - MAIL_HEADER_IMAGE=${MAIL_HEADER_IMAGE}
       - DATABASE_URL=${DATABASE_URL}
     ports:
-      - '${APP_PORT}:3000'
+      - '127.0.0.1:${APP_PORT}:3000'
     env_file:
       - .env
     restart: always
