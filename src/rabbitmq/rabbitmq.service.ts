@@ -1,9 +1,9 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { ConfigService } from "@nestjs/config";
 import { lastValueFrom } from "rxjs";
 import * as amqp from 'amqplib';
 import { SendMessageRabbitDTO } from "./dto/send-message.rabbit.dto";
-import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class RabbitmqService implements OnModuleInit {
@@ -14,12 +14,12 @@ export class RabbitmqService implements OnModuleInit {
 
   async onModuleInit() {
     const RABBITMQ_URL = this.configService.get<string>('RABBITMQ_URL');
-    const exchange = this.configService.get<string>('RABBITMQ_EXCHANGE_NAME');
-    const exchangeType = this.configService.get<string>('RABBITMQ_EXCHANGE_TYPE');
+    const EXCHANGE_NAME = this.configService.get<string>('RABBITMQ_EXCHANGE_NAME');
+    const EXCHANGE_TYPE = this.configService.get<string>('RABBITMQ_EXCHANGE_TYPE');
 
     const exchanges = [{
-      name: exchange,
-      type: exchangeType,
+      name: EXCHANGE_NAME,
+      type: EXCHANGE_TYPE,
       durable: true
     }]
 

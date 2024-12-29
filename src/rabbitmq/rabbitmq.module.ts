@@ -19,8 +19,13 @@ import { RabbitmqService } from "./rabbitmq.service";
               'x-dead-letter-exchange': configService.get<string>('RABBITMQ_EXCHANGE_EXPIRED_MSGS'), // Exchange para mensagens expiradas
             }
           },
-          exchange: configService.get<string>('RABBITMQ_EXCHANGE_NAME'),
-          exchangeType: configService.get<string>('RABBITMQ_EXCHANGE_TYPE'), // 'fanout', 'direct', 'topic', 'headers'
+          exchange: {
+            name: configService.get<string>('RABBITMQ_EXCHANGE_NAME'),
+            type: configService.get<string>('RABBITMQ_EXCHANGE_TYPE'), // 'fanout', 'direct', 'topic', 'headers'
+            echangeOpts: {
+              durable: true
+            }
+          },
         }
       })
     }]),

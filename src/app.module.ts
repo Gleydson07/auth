@@ -54,8 +54,6 @@ export const prefix = 'ms-auth/api/v1'
     ]),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule { }
