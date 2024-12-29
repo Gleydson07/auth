@@ -13,6 +13,7 @@ import { templateRecoveryPassword } from "@/mailer/templates/recovery-password";
 import { RecoveryPasswordDto } from "./dto/recovery-password.dto copy";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { generateProvisionalPasswordHash } from "@/utils/functions/generateProvisionalPasswordHash";
+import { RabbitmqService } from "@/rabbitmq/rabbitmq.service";
 
 
 @Injectable()
@@ -22,6 +23,7 @@ export class AuthService {
     private jwtService: JwtService,
     private blackListService: BlackListService,
     private mailerService: MailerService,
+    private rabbitmqService: RabbitmqService,
     private configService: ConfigService
   ) { }
 
@@ -182,6 +184,11 @@ export class AuthService {
 
       await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
       this.mailerService.sendMail(mailProps);
+      this.rabbitmqService.publishMessage({
+        exchange: this.configService.get<string>('RABBITMQ_EXCHANGE_NAME'),
+        routineKey: "",
+        message: mailReplacements
+      })
     } catch (error) {
       throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
     }

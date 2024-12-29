@@ -6,9 +6,10 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersModule } from "@/users/users.module";
 import { BlackListService } from "@/auth/black-list/black-list.service";
 import { MailerService } from "@/mailer/mailer.service";
+import { RabbitmqModule } from "@/rabbitmq/rabbitmq.module";
 
 @Module({
-  imports: [UsersModule, ConfigModule],
+  imports: [UsersModule, ConfigModule, RabbitmqModule],
   providers: [AuthService, JwtService, BlackListService, MailerService],
   controllers: [AuthController],
   exports: [AuthService]

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService  } from "@nestjs/config";
+import { ConfigModule  } from "@nestjs/config";
 import { ScheduleModule } from '@nestjs/schedule';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { RouterModule } from "@nestjs/core";
@@ -16,6 +15,7 @@ import { AddressesModule } from "./addresses/addresses.module";
 import { MailerModule } from './mailer/mailer.module';
 import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
 import { join } from "path";
+import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 
 export const prefix = 'ms-auth/api/v1'
 
@@ -31,27 +31,8 @@ export const prefix = 'ms-auth/api/v1'
       playground: true,
       debug: true,
     }),
-    ClientsModule.registerAsync([{
-      name: "RabbitMQ",
-      imports: [],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        name: configService.get<string>('APP_NAME'),
-        transport: Transport.RMQ,
-        options: {
-          urls: [configService.get<string>('RABBITMQ_URL')],
-          queueOptions: {
-            arguments: {
-              'x-message-ttl': configService.get<number>('RABBITMQ_TTL_MSGS'), // TTL de mensagens (60 segundos)
-              'x-dead-letter-exchange': configService.get<string>('RABBITMQ_EXCHANGE_EXPIRED_MSGS'), // Exchange para mensagens expiradas
-            }
-          },
-          exchange: configService.get<string>('RABBITMQ_EXCHANGE_NAME'),
-          exchangeType: configService.get<string>('RABBITMQ_EXCHANGE_TYPE'), // 'fanout', 'direct', 'topic', 'headers'
-        }
-      })
-    }]),
     ScheduleModule.forRoot(),
+    RabbitmqModule,
     DatabaseModule,
     AuthModule,
     UsersModule,
