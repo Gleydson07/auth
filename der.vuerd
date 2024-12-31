@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -248.2163,
-    "scrollLeft": -344.8676,
-    "zoomLevel": 0.75,
+    "scrollTop": -101,
+    "scrollLeft": -789,
+    "zoomLevel": 0.72,
     "show": 431,
     "database": 4,
     "databaseName": "Auth",
@@ -173,6 +173,7 @@
           "05dfee51-038e-4be2-98e9-f84d8e2870aa",
           "a4a4fbca-1aa5-4094-b2dd-2accadc7c15d",
           "78b4ab4c-39c9-45a4-b7e4-3fb1c8151347",
+          "w1d-TDMnX6K4Plm8wtC_U",
           "24888fdc-640f-472a-931e-bd8a2df4c7dc",
           "8c52ec42-708a-4611-9829-29641c8e36ae"
         ],
@@ -184,19 +185,20 @@
           "05dfee51-038e-4be2-98e9-f84d8e2870aa",
           "a4a4fbca-1aa5-4094-b2dd-2accadc7c15d",
           "78b4ab4c-39c9-45a4-b7e4-3fb1c8151347",
+          "w1d-TDMnX6K4Plm8wtC_U",
           "24888fdc-640f-472a-931e-bd8a2df4c7dc",
           "8c52ec42-708a-4611-9829-29641c8e36ae"
         ],
         "ui": {
           "x": 1394.333,
-          "y": 517.9051,
+          "y": 505.405,
           "zIndex": 397,
           "widthName": 60,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1731372889243,
+          "updateAt": 1735611091237,
           "createAt": 1731372860927
         }
       },
@@ -1012,6 +1014,26 @@
           "updateAt": 1731372860927,
           "createAt": 1731372860927
         }
+      },
+      "w1d-TDMnX6K4Plm8wtC_U": {
+        "id": "w1d-TDMnX6K4Plm8wtC_U",
+        "tableId": "0f0ad572-a974-498b-b2ae-edcda824f0be",
+        "name": "zipCode",
+        "comment": "",
+        "dataType": "VARCHAR",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1735611088036,
+          "createAt": 1735611071553
+        }
       }
     },
     "relationshipEntities": {
@@ -1091,7 +1113,7 @@
             "6a43d7bc-adb3-45cb-86aa-1df1c20b8b24"
           ],
           "x": 1394.333,
-          "y": 653.9051,
+          "y": 653.405,
           "direction": 1
         },
         "meta": {
@@ -1132,5 +1154,16 @@
     "indexColumnEntities": {},
     "memoEntities": {}
   },
-  "lww": {}
+  "lww": {
+    "w1d-TDMnX6K4Plm8wtC_U": [
+      "tableColumnEntities",
+      1735611071551,
+      -1,
+      {
+        "name": 1735611075128,
+        "dataType": 1735611084174,
+        "options(notNull)": 1735611088035
+      }
+    ]
+  }
 }
