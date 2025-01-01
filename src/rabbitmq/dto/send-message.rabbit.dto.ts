@@ -1,5 +1,4 @@
 export class SendMessageRabbitDTO {
-  exchange: string;
-  routineKey?: string;
+  routingKey?: string;
   message: any;
 }
