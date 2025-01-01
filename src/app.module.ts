@@ -16,12 +16,21 @@ import { MailerModule } from './mailer/mailer.module';
 import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
 import { join } from "path";
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
+import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
+
+const env = dotenv.config();
+dotenvExpand.expand(env);
 
 export const prefix = 'ms-auth/api/v1'
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      load: [() => env.parsed]
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       context: ({ req }) => ({ req }),
       driver: ApolloDriver,

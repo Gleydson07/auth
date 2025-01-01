@@ -184,9 +184,10 @@ export class AuthService {
 
       await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
       this.mailerService.sendMail(mailProps);
+
       this.rabbitmqService.publishMessage({
         exchange: this.configService.get<string>('RABBITMQ_EXCHANGE_NAME'),
-        routineKey: "",
+        routineKey: "sms",
         message: mailReplacements
       })
     } catch (error) {

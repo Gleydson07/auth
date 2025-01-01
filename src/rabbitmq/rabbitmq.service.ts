@@ -1,16 +1,14 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from "@nestjs/config";
-import { lastValueFrom } from "rxjs";
 import * as amqp from 'amqplib';
 import { SendMessageRabbitDTO } from "./dto/send-message.rabbit.dto";
 
 @Injectable()
 export class RabbitmqService implements OnModuleInit {
-  constructor(
-    @Inject('RabbitMQ') private readonly client: ClientProxy,
-    private readonly configService: ConfigService
-) {}
+  private channel: amqp.Channel;
+  private connection: amqp.Connection;
+
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit() {
     const RABBITMQ_URL = this.configService.get<string>('RABBITMQ_URL');
@@ -23,24 +21,29 @@ export class RabbitmqService implements OnModuleInit {
       durable: true
     }]
 
-    const connection = await amqp.connect(RABBITMQ_URL);
-    const channel = await connection.createChannel();
+    this.connection = await amqp.connect(RABBITMQ_URL);
+    this.channel = await this.connection.createChannel();
 
     await Promise.all(exchanges.map((ex) => {
-      return channel.assertExchange(ex.name, ex.type, { durable: ex.durable });
-    }))
+      return this.channel.assertExchange(ex.name, ex.type, { durable: ex.durable });
+    }));
 
     console.table(exchanges);
-    await channel.close();
-    await connection.close();
+  }
+
+  async onModuleDestroy() {
+    await this.channel.close();
+    await this.connection.close();
   }
 
   async publishMessage({ exchange, routineKey, message }: SendMessageRabbitDTO) {
     try {
-      const request = this.client.emit({ exchange, routineKey }, message);
-      await lastValueFrom(request);
+      const messageBuffer = Buffer.from(JSON.stringify(message));
 
-      console.log(`Message published to exchange "${exchange}".`);
+      this.channel.publish(exchange, routineKey, messageBuffer, {
+        persistent: true,
+      });
+
     } catch (error) {
       console.error('Error publishing message:', error);
       throw error.message;
