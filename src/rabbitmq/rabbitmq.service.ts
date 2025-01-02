@@ -92,7 +92,9 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
       try {
         await this.publishMessage({routingKey, message});
 
-        console.log(`Mensagem processada da fila local: ${this.localQueue.length}.`);
+        if (!this.localQueue.length) {
+          console.log("Todas as mensagens armazenadas localmente foram enfileiradas");
+        }
       } catch (error) {
         console.error('Erro ao processar mensagem da fila local:', error.message);
 
@@ -100,5 +102,6 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
         break;
       }
     }
+
   }
 }

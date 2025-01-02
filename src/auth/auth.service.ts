@@ -164,8 +164,6 @@ export class AuthService {
         throw new HttpException("Não é possível recuperar a senha de usuários inativos.", HttpStatus.BAD_REQUEST);
       }
 
-      const userSender = this.configService.get<string>("MAIL_DEFAULT_SENDER");
-
       const mailReplacements = {
         user: `${user.name} ${user.lastname.split(" ")[0]}`,
         hashProvisional: generateProvisionalPasswordHash(12),
@@ -174,21 +172,29 @@ export class AuthService {
         headerImage: this.configService.get<string>("MAIL_HEADER_IMAGE"),
       };
 
-      const mailProps: SendMailDto = {
-        from: `"${mailReplacements.companyName}" <${userSender}>`,
-        recipients: user.email,
-        subject: "Recuperação de senha",
-        text: "/nOlá!/n Siga as orientações abaixo para recuperar sua senha:",
-        html: mailReplacements ? templateFormatter(templateRecoveryPassword, mailReplacements) : templateRecoveryPassword
+      await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
+
+      if (this.configService.get<boolean>("MAIL_SEND_FROM_QUEUE")) {
+        this.rabbitmqService.publishMessage({
+          routingKey: "email",
+          message: {
+            ...mailReplacements,
+            recipients: user?.email
+          }
+        })
+      } else {
+        const userSender = this.configService.get<string>("MAIL_DEFAULT_SENDER");
+        const mailProps: SendMailDto = {
+          from: `"${mailReplacements.companyName}" <${userSender}>`,
+          recipients: user.email,
+          subject: "Recuperação de senha",
+          text: "/nOlá!/n Siga as orientações abaixo para recuperar sua senha:",
+          html: mailReplacements ? templateFormatter(templateRecoveryPassword, mailReplacements) : templateRecoveryPassword
+        }
+
+        this.mailerService.sendMail(mailProps);
       }
 
-      await this.usersService.generateProvisionalPassword(user.id, mailReplacements.hashProvisional);
-      // this.mailerService.sendMail(mailProps);
-
-      this.rabbitmqService.publishMessage({
-        routingKey: "email",
-        message: mailReplacements
-      })
     } catch (error) {
       throw new HttpException(error?.message || "Falha ao solicitar email de recuperação de senha!", HttpStatus.BAD_REQUEST);
     }
