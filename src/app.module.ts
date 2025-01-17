@@ -3,7 +3,7 @@ import { ConfigModule  } from "@nestjs/config";
 import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { RouterModule } from "@nestjs/core";
+import { APP_GUARD, RouterModule } from "@nestjs/core";
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { AuthModule } from "./auth/auth.module";
@@ -18,6 +18,7 @@ import { join } from "path";
 import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
@@ -30,6 +31,29 @@ export const prefix = 'ms-auth/api/v1'
       isGlobal: true,
       envFilePath: '.env',
       load: [() => env.parsed]
+    }),
+    ThrottlerModule.forRoot({
+      errorMessage: "Número máximo de requisições atingido.",
+      throttlers: [
+        {
+          name: "short",
+          ttl: 10000,
+          limit: 5,
+          blockDuration: 60000
+        },
+        {
+          name: "medium",
+          ttl: 30000,
+          limit: 20,
+          blockDuration: 120000
+        },
+        {
+          name: "long",
+          ttl: 120000,
+          limit: 50,
+          blockDuration: 600000
+        },
+      ]
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       context: ({ req }) => ({ req }),
@@ -64,6 +88,12 @@ export const prefix = 'ms-auth/api/v1'
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
 })
 export class AppModule { }

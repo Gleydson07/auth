@@ -67,7 +67,7 @@ model Address {
   number       String?  @db.VarChar()
   city         String   @db.VarChar()
   country      String   @db.VarChar()
-  zipCode      String   @db.VarChar()
+  zipCode      String   @db.VarChar() @map("zip_code")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt() @map("updated_at")
 
