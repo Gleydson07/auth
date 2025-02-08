@@ -10,7 +10,7 @@ import { AuthModule } from './app/modules/auth/auth.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { BlackListModule } from './app/modules/auth/black-list/black-list.module';
 import { ProfilesModule } from './app/modules/profiles/profiles.module';
-import { AddressesModule } from './addresses/addresses.module';
+import { AddressesModule } from './app/modules/addresses/addresses.module';
 import { MailerModule } from './infra/services/mailer/mailer.module';
 import { ScheduledTasksModule } from './infra/services/scheduled-tasks/scheduled-tasks.module';
 import { join } from 'path';

@@ -1,4 +1,4 @@
-import { Address } from '@/addresses/entities/address.entity';
+import { Address } from '@/app/modules/addresses/entities/address.entity';
 import { Profile } from '@/app/modules/profiles/entities/profile.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
