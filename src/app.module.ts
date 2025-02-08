@@ -4,8 +4,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
-import { AppService } from './app.service';
-import { AppController } from './app.controller';
 import { AuthModule } from './app/modules/auth/auth.module';
 import { DatabaseModule } from './infra/database/database.module';
 import { BlackListModule } from './app/modules/auth/black-list/black-list.module';
@@ -87,9 +85,7 @@ export const prefix = 'ms-auth/api/v1';
       { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
     ]),
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
