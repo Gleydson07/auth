@@ -3,7 +3,7 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AddressesService {

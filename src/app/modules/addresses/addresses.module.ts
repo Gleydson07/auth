@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AddressesService } from './addresses.service';
 import { AddressesController } from './addresses.controller';
-import { UsersService } from '@/users/users.service';
 import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
 
 @Module({
   controllers: [AddressesController],

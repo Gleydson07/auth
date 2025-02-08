@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProfilesService {

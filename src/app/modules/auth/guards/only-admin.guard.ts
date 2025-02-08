@@ -8,11 +8,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { UsersService } from "@/users/users.service";
-import { RoleEnum } from "@prisma/client";
+import { RoleEnum } from '@prisma/client';
+import { UsersService } from '../../users/users.service';
 
 @Injectable()
 export class OnlyAdminGuard implements CanActivate {
@@ -20,10 +20,9 @@ export class OnlyAdminGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService,
     private userService: UsersService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
@@ -32,15 +31,14 @@ export class OnlyAdminGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        { secret: this.configService.get<string>('JWT_SECRET') }
-      );
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
 
       const user = await this.userService.findOneById(payload.sub);
 
-      if (!user || user && user.role !== RoleEnum.ADMIN) {
-        throw new Error("Usuário sem permissão para esta ação!");
+      if (!user || (user && user.role !== RoleEnum.ADMIN)) {
+        throw new Error('Usuário sem permissão para esta ação!');
       }
     } catch {
       throw new BadRequestException('Usuário sem permissão para esta ação.');

@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
-import { CreateUserDto } from '@/users/dto/create-user.dto';
-import { UsersService } from '@/users/users.service';
-import { User } from '@/users/entities/user.entity';
+import { UsersService } from '../../users.service';
+import { CreateUserDto } from '../../dto/create-user.dto';
+import { User } from '../../entities/user.entity';
 
 export const SALT = 12;
 

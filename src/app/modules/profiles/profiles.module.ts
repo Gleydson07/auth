@@ -3,7 +3,7 @@ import { ProfilesService } from './profiles.service';
 import { ProfilesController } from './profiles.controller';
 import { JwtService } from '@nestjs/jwt';
 import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
-import { UsersService } from '@/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Module({
   controllers: [ProfilesController],
