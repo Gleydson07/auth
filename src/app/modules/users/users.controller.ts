@@ -1,18 +1,29 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, HttpCode, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Put,
+  HttpCode,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from "@/auth/guards/auth.guard";
-import { User } from "@/utils/decorators/user-extract-auth.decorator";
-import { UserFromToken } from "@/auth/dto/token-payload.dto";
-import { RoleEnum } from "@prisma/client";
-import { OnlyAdminGuard } from "@/auth/guards/only-admin.guard";
-import { parseBooleanOrUndefined } from "@/utils/functions/parseBoolean";
+import { AuthGuard } from '@/app/modules/auth/guards/auth.guard';
+import { User } from '@/utils/decorators/user-extract-auth.decorator';
+import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
+import { RoleEnum } from '@prisma/client';
+import { OnlyAdminGuard } from '@/app/modules/auth/guards/only-admin.guard';
+import { parseBooleanOrUndefined } from '@/utils/functions/parseBoolean';
 
 @UseGuards(AuthGuard)
 @Controller('')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(OnlyAdminGuard)
   @Post()
@@ -22,38 +33,38 @@ export class UsersController {
 
   @UseGuards(OnlyAdminGuard)
   @HttpCode(200)
-  @Post("/:userId/roles/:role")
+  @Post('/:userId/roles/:role')
   role(
-    @Param("role") role: RoleEnum,
-    @Param("userId") userId: number,
-    @User() user: UserFromToken
+    @Param('role') role: RoleEnum,
+    @Param('userId') userId: number,
+    @User() user: UserFromToken,
   ) {
     return this.usersService.changeRole(user, role, +userId);
   }
 
   @UseGuards(OnlyAdminGuard)
   @HttpCode(200)
-  @Post("/:userId/active/:active")
+  @Post('/:userId/active/:active')
   active(
-    @Param("userId") userId: number,
-    @Param("active") active: string,
-    @User() user: UserFromToken
+    @Param('userId') userId: number,
+    @Param('active') active: string,
+    @User() user: UserFromToken,
   ) {
     return this.usersService.changeActive(
       user,
-      active === "true" ? true : false,
-      +userId
+      active === 'true' ? true : false,
+      +userId,
     );
   }
 
   @Get()
-  findAll(@Query("active") active?: string) {
+  findAll(@Query('active') active?: string) {
     const isActive = parseBooleanOrUndefined(active);
     return this.usersService.findAll(isActive);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Query("active") active: string) {
+  findOne(@Param('id') id: string, @Query('active') active: string) {
     const isActive = parseBooleanOrUndefined(active);
     return this.usersService.findOneById(+id, isActive);
   }
@@ -62,7 +73,7 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @User() user: UserFromToken
+    @User() user: UserFromToken,
   ) {
     return this.usersService.update(user, +id, updateUserDto);
   }
@@ -70,9 +81,7 @@ export class UsersController {
   @UseGuards(OnlyAdminGuard)
   @HttpCode(204)
   @Delete(':id')
-  remove(
-    @Param('id') id: string,
-  ) {
+  remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
 }

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(client, "Client", "User application")
+Container(frontend, "App Frontend", "NextJS", "Frontend Application")
+Container(auth, "Authetication", "NestJS | PrismaORM", "Authetication Service")
+Container(notification, "Notification", "NestJS | PrismaORM", "Notification Service")
+Container(backend, "Backend", "NestJS | PrismaORM", "Backend Service")
+
+Rel(client, frontend, "User access application", "")
+Rel(frontend, auth, "Require authetication", "")
+Rel(frontend, backend, "User logged", "")
+Rel(backend, notification, "Send notification", "")
+@enduml

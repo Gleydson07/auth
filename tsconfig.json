@@ -18,24 +18,12 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@auth/*": [
-        "src/auth/*"
-      ],
-      "@blacklist/*": [
-        "src/auth/black-list/*"
-      ],
-      "@database/*": [
-        "src/database/*"
-      ],
-      "@users/*": [
-        "src/users/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
+      "@/*": ["src/*"],
+      "@auth/*": ["src/app/modules/auth/*"],
+      "@blacklist/*": ["src/app/modules/auth/black-list/*"],
+      "@database/*": ["src/infra/database/*"],
+      "@users/*": ["src/users/*"],
+      "@utils/*": ["src/utils/*"]
     }
   }
 }

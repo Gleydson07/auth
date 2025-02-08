@@ -1,59 +1,59 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule  } from "@nestjs/config";
+import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { APP_GUARD, RouterModule } from "@nestjs/core";
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { AuthModule } from "./auth/auth.module";
-import { UsersModule } from "./users/users.module";
-import { DatabaseModule } from "./database/database.module";
-import { BlackListModule } from './auth/black-list/black-list.module';
-import { ProfilesModule } from './profiles/profiles.module';
-import { AddressesModule } from "./addresses/addresses.module";
-import { MailerModule } from './mailer/mailer.module';
-import { ScheduledTasksModule } from './scheduled-tasks/scheduled-tasks.module';
-import { join } from "path";
-import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
+import { AuthModule } from './app/modules/auth/auth.module';
+import { DatabaseModule } from './infra/database/database.module';
+import { BlackListModule } from './app/modules/auth/black-list/black-list.module';
+import { ProfilesModule } from './app/modules/profiles/profiles.module';
+import { AddressesModule } from './addresses/addresses.module';
+import { MailerModule } from './infra/services/mailer/mailer.module';
+import { ScheduledTasksModule } from './infra/services/scheduled-tasks/scheduled-tasks.module';
+import { join } from 'path';
+import { RabbitmqModule } from './infra/services/rabbitmq/rabbitmq.module';
 import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { UsersModule } from './app/modules/users/users.module';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
 
-export const prefix = 'ms-auth/api/v1'
+export const prefix = 'ms-auth/api/v1';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [() => env.parsed]
+      load: [() => env.parsed],
     }),
     ThrottlerModule.forRoot({
-      errorMessage: "Número máximo de requisições atingido.",
+      errorMessage: 'Número máximo de requisições atingido.',
       throttlers: [
         {
-          name: "short",
+          name: 'short',
           ttl: 10000,
           limit: 5,
-          blockDuration: 60000
+          blockDuration: 60000,
         },
         {
-          name: "medium",
+          name: 'medium',
           ttl: 30000,
           limit: 20,
-          blockDuration: 120000
+          blockDuration: 120000,
         },
         {
-          name: "long",
+          name: 'long',
           ttl: 120000,
           limit: 50,
-          blockDuration: 600000
+          blockDuration: 600000,
         },
-      ]
+      ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       context: ({ req }) => ({ req }),
@@ -82,7 +82,7 @@ export const prefix = 'ms-auth/api/v1'
         children: [
           { path: `/:id/profiles`, module: ProfilesModule },
           { path: `/:id/addresses`, module: AddressesModule },
-        ]
+        ],
       },
       { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
     ]),
@@ -92,8 +92,8 @@ export const prefix = 'ms-auth/api/v1'
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+      useClass: ThrottlerGuard,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

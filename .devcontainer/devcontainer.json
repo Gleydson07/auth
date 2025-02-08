@@ -7,7 +7,8 @@
         "ms-vscode-remote.remote-containers",
         "Prisma.prisma",
         "Postman.postman-for-vscode",
-        "dineug.vuerd-vscode"
+        "dineug.vuerd-vscode",
+        "jebbs.plantuml"
       ],
       "settings": {}
     }

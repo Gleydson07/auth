@@ -1,4 +1,4 @@
-import { UserFromToken } from "@/auth/dto/token-payload.dto";
+import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const User = createParamDecorator(

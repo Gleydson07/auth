@@ -7,13 +7,13 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Reflector } from "@nestjs/core";
-import { IS_PUBLIC_KEY } from "@/utils/decorators/skip-auth.decorator";
-import { BlackListService } from "@/auth/black-list/black-list.service";
-import { GqlExecutionContext } from "@nestjs/graphql";
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '@/utils/decorators/skip-auth.decorator';
+import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -21,8 +21,8 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
     private configService: ConfigService,
     private blackListTokens: BlackListService,
-    private reflector: Reflector
-  ) { }
+    private reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -44,14 +44,15 @@ export class AuthGuard implements CanActivate {
     const isRevoked = await this.blackListTokens.exists(token);
 
     if (isRevoked) {
-      throw new UnauthorizedException('O token em uso foi revogado, efetue login novamente.');
+      throw new UnauthorizedException(
+        'O token em uso foi revogado, efetue login novamente.',
+      );
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        { secret: this.configService.get<string>('JWT_SECRET') }
-      );
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
 
       request['user'] = payload;
     } catch {

@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from "@/database/Prisma/prisma.service";
-import { CreateUserDto } from "@/users/dto/create-user.dto";
-import { UsersService } from "@/users/users.service";
-import { User } from "@/users/entities/user.entity";
+import { PrismaService } from '@/infra/database/Prisma/prisma.service';
+import { CreateUserDto } from '@/users/dto/create-user.dto';
+import { UsersService } from '@/users/users.service';
+import { User } from '@/users/entities/user.entity';
 
 export const SALT = 12;
 
@@ -12,14 +12,16 @@ export class UserGraphqlService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly userService: UsersService,
-  ) { }
+  ) {}
 
   async create(data: CreateUserDto) {
     try {
-      const userAlreadyExists = await this.userService.findOneByEmail({ email: data.email });
+      const userAlreadyExists = await this.userService.findOneByEmail({
+        email: data.email,
+      });
 
       if (userAlreadyExists) {
-        throw new Error("Usuário já existe.");
+        throw new Error('Usuário já existe.');
       }
 
       const hash = await bcrypt.hash(data.password, SALT);
@@ -45,9 +47,9 @@ export class UserGraphqlService {
     return this.prismaService.user.findMany({
       where: {
         name: {
-          contains: name
+          contains: name,
         },
-        active: true
+        active: true,
       },
       select: {
         id: true,
@@ -62,8 +64,8 @@ export class UserGraphqlService {
         updatedAt: true,
       },
       orderBy: {
-        name: "asc"
-      }
+        name: 'asc',
+      },
     });
   }
 }

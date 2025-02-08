@@ -1,14 +1,19 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from "@/database/Prisma/prisma.service";
-import { UserFromToken } from "@/auth/dto/token-payload.dto";
-import { RoleEnum } from "@prisma/client";
-import { BlackListService } from "@/auth/black-list/black-list.service";
-import { ConfigService } from "@nestjs/config";
-import { FindByEmailDto } from "./dto/find-by-email-user.dto";
-import { generateProvisionalPasswordHash } from "@/utils/functions/generateProvisionalPasswordHash";
+import { PrismaService } from '@/infra/database/Prisma/prisma.service';
+import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
+import { RoleEnum } from '@prisma/client';
+import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
+import { ConfigService } from '@nestjs/config';
+import { FindByEmailDto } from './dto/find-by-email-user.dto';
+import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';
 
 export const SALT = 12;
 
@@ -16,15 +21,17 @@ export const SALT = 12;
 export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
-    private configService: ConfigService
-  ) { }
+    private configService: ConfigService,
+  ) {}
 
   async create(data: CreateUserDto) {
     try {
-      const userAlreadyExists = await this.findOneByEmail({ email: data.email });
+      const userAlreadyExists = await this.findOneByEmail({
+        email: data.email,
+      });
 
       if (userAlreadyExists) {
-        throw new Error("Usuário já existe.");
+        throw new Error('Usuário já existe.');
       }
 
       const hash = await bcrypt.hash(data.password, SALT);
@@ -51,17 +58,17 @@ export class UsersService {
       const roleSanitized = role.trim().toUpperCase() as RoleEnum;
       const isValidRole = Object.values(RoleEnum).includes(roleSanitized);
       if (!isValidRole) {
-        throw new Error("Role inválida.");
+        throw new Error('Role inválida.');
       }
 
       const userToUpdateRole = await this.findOneById(userId);
 
       if (!userToUpdateRole) {
-        throw new Error("Usuário não encontrado.");
+        throw new Error('Usuário não encontrado.');
       }
 
       if (Number(user.sub) === Number(userId)) {
-        throw new Error("Você não pode alterar seu nível de acesso.");
+        throw new Error('Você não pode alterar seu nível de acesso.');
       }
 
       await this.prismaService.user.update({
@@ -69,7 +76,7 @@ export class UsersService {
           id: userId,
         },
         data: {
-          role: roleSanitized
+          role: roleSanitized,
         },
       });
     } catch (error) {
@@ -82,11 +89,11 @@ export class UsersService {
       const userToUpdateRole = await this.findOneById(userId);
 
       if (!userToUpdateRole) {
-        throw new Error("Usuário não encontrado.");
+        throw new Error('Usuário não encontrado.');
       }
 
       if (Number(user.sub) === Number(userId)) {
-        throw new Error("Você não pode alterar seu status.");
+        throw new Error('Você não pode alterar seu status.');
       }
 
       await this.prismaService.user.update({
@@ -94,7 +101,7 @@ export class UsersService {
           id: userId,
         },
         data: {
-          active: active
+          active: active,
         },
       });
     } catch (error) {
@@ -105,7 +112,7 @@ export class UsersService {
   async findAll(active?: boolean) {
     return await this.prismaService.user.findMany({
       where: {
-        active: active
+        active: active,
       },
       select: {
         id: true,
@@ -117,8 +124,8 @@ export class UsersService {
         createdAt: true,
       },
       orderBy: {
-        name: "asc"
-      }
+        name: 'asc',
+      },
     });
   }
 
@@ -133,16 +140,16 @@ export class UsersService {
         active: true,
         role: true,
         createdAt: true,
-      }
+      },
     });
   }
 
-  async findOneByEmail({email, active}: FindByEmailDto) {
+  async findOneByEmail({ email, active }: FindByEmailDto) {
     const data = await this.prismaService.user.findUnique({
       where: {
         email: email.trim().toLowerCase(),
-        active: active
-      }
+        active: active,
+      },
     });
 
     if (!data?.id) return null;
@@ -164,13 +171,20 @@ export class UsersService {
           expiresIn: new Date(
             currentDate.setMinutes(
               currentDate.getMinutes() +
-              Number(this.configService.get<string>("USER_EXPIRES_PROVISIONAL_PASSWORD_IN_MINUTES") ?? 5)
-            )
-          )
-        }
+                Number(
+                  this.configService.get<string>(
+                    'USER_EXPIRES_PROVISIONAL_PASSWORD_IN_MINUTES',
+                  ) ?? 5,
+                ),
+            ),
+          ),
+        },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao gerar senha provisória.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao gerar senha provisória.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -180,15 +194,17 @@ export class UsersService {
         where: {
           active: isActive,
           expiresIn: {
-            lte: new Date()
-          }
+            lte: new Date(),
+          },
         },
         select: {
-          id: true
-        }
+          id: true,
+        },
       });
     } catch (error) {
-      throw new BadRequestException("Falha ao localizar usuários com senhas provisórias.");
+      throw new BadRequestException(
+        'Falha ao localizar usuários com senhas provisórias.',
+      );
     }
   }
 
@@ -199,11 +215,14 @@ export class UsersService {
           userId: userId,
         },
         data: {
-          active: false
-        }
+          active: false,
+        },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao desabilitar senha provisória.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao desabilitar senha provisória.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -214,7 +233,7 @@ export class UsersService {
           user: {
             email: email,
           },
-          active: true
+          active: true,
         },
         select: {
           provisionalPassword: true,
@@ -223,12 +242,14 @@ export class UsersService {
               id: true,
               email: true,
               password: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
     } catch (error) {
-      throw new BadRequestException("Falha ao validar acesso provisório do usuário.");
+      throw new BadRequestException(
+        'Falha ao validar acesso provisório do usuário.',
+      );
     }
   }
 
@@ -239,11 +260,14 @@ export class UsersService {
           id: { in: ids },
         },
         data: {
-          active: false
-        }
+          active: false,
+        },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao desabilitar senha provisória.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao desabilitar senha provisória.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -252,10 +276,13 @@ export class UsersService {
       await this.prismaService.provisionalPassword.deleteMany({
         where: {
           id: { in: ids },
-        }
+        },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao remover senhas provisórias.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao remover senhas provisórias.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -265,14 +292,17 @@ export class UsersService {
       await this.prismaService.user.update({
         where: {
           email,
-          active: true
+          active: true,
         },
         data: {
           password: hash,
         },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao atualizar password.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao atualizar password.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -281,21 +311,24 @@ export class UsersService {
       await this.checkIsUserAdminOrSameId({
         userId: id,
         userIdFromToken: user.sub,
-        messageError: "Não é permitido alterar o cadastro de terceiros.",
+        messageError: 'Não é permitido alterar o cadastro de terceiros.',
       });
 
       await this.prismaService.user.update({
         where: {
           id: id,
-          active: true
+          active: true,
         },
         data: {
           name: updateUserDto?.name,
-          lastname: updateUserDto?.lastname
+          lastname: updateUserDto?.lastname,
         },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao atualizar dados do usuário.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao atualizar dados do usuário.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -304,50 +337,59 @@ export class UsersService {
       const userToUpdateRole = await this.findOneById(+id);
 
       if (!userToUpdateRole) {
-        throw new Error("Usuário não encontrado.");
+        throw new Error('Usuário não encontrado.');
       }
 
       return this.prismaService.user.update({
         where: {
-          id: +id
+          id: +id,
         },
         data: {
           active: false,
-          password: generateProvisionalPasswordHash(12)
-        }
+          password: generateProvisionalPasswordHash(12),
+        },
       });
     } catch (error) {
-      throw new HttpException(error.message || "Falha ao remover usuário.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        error.message || 'Falha ao remover usuário.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async updateUserAdmin(active: boolean) {
     return await this.prismaService.user.update({
       where: {
-        email: "admin@admin.com"
+        email: 'admin@admin.com',
       },
       data: {
         active,
-      }
+      },
     });
   }
 
   async checkIsUserAdminOrSameId(props: {
-    userId: number,
-    userIdFromToken: number,
-    messageError: string,
+    userId: number;
+    userIdFromToken: number;
+    messageError: string;
   }) {
     const userFound = await this.findOneById(+props.userIdFromToken);
 
     if (!userFound?.id) {
-      throw new HttpException("Usuário inválido.", HttpStatus.BAD_REQUEST);
+      throw new HttpException('Usuário inválido.', HttpStatus.BAD_REQUEST);
     }
 
     if (!userFound?.active) {
-      throw new HttpException("O usuário deve estar ativo.", HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'O usuário deve estar ativo.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
-    if (Number(props.userIdFromToken) !== Number(props.userId) && userFound?.role !== RoleEnum.ADMIN) {
+    if (
+      Number(props.userIdFromToken) !== Number(props.userId) &&
+      userFound?.role !== RoleEnum.ADMIN
+    ) {
       throw new HttpException(props.messageError, HttpStatus.BAD_REQUEST);
     }
   }
