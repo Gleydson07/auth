@@ -10,7 +10,6 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { UserFromToken } from './dto/token-payload.dto';
-import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
 import { MailerService } from '@/infra/services/mailer/mailer.service';
 import { SendMailDto } from '@/infra/services/mailer/dto/send-mail.dto';
 import { templateFormatter } from '@/infra/services/mailer/utils/replacer';
@@ -19,16 +18,17 @@ import { RecoveryPasswordDto } from './dto/recovery-password.dto copy';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';
 import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
+import { BlackListRepository } from '@/app/repositories/black-list.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private blackListService: BlackListService,
     private mailerService: MailerService,
     private rabbitmqService: RabbitmqService,
     private configService: ConfigService,
+    private blackListRepository: BlackListRepository,
   ) {}
 
   async signIn({ email, password: pass }: SignInAuthDto): Promise<any> {
@@ -135,7 +135,7 @@ export class AuthService {
     user: UserFromToken,
   ): Promise<any> {
     try {
-      const tokenAlreadyExists = await this.blackListService.exists(token);
+      const tokenAlreadyExists = await this.blackListRepository.exists(token);
 
       if (tokenAlreadyExists) {
         throw new HttpException(
@@ -144,7 +144,7 @@ export class AuthService {
         );
       }
 
-      return this.blackListService.create({
+      return this.blackListRepository.create({
         token,
         args,
         revokedByUserId: user.sub,

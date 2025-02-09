@@ -10,7 +10,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { RoleEnum } from '@prisma/client';
-import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
 import { ConfigService } from '@nestjs/config';
 import { FindByEmailDto } from './dto/find-by-email-user.dto';
 import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';

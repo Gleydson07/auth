@@ -3,7 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { UsersService } from '../users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 
 export const SALT = 12;
 
@@ -43,7 +43,7 @@ export class UserGraphqlService {
     }
   }
 
-  async findAll(name?: string): Promise<User[]> {
+  async findAll(name?: string): Promise<UserEntity[]> {
     return this.prismaService.user.findMany({
       where: {
         name: {

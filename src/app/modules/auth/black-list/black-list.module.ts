@@ -1,7 +1,14 @@
 import { Module } from '@nestjs/common';
-import { BlackListService } from './black-list.service';
+import { BlackListRepository } from '@/app/repositories/black-list.repository';
+import { PrismaBlackListService } from '@/infra/database/repositories/prisma-black-list.repository';
 
 @Module({
-  providers: [BlackListService],
+  providers: [
+    {
+      provide: BlackListRepository,
+      useClass: PrismaBlackListService,
+    },
+  ],
+  exports: [BlackListRepository],
 })
-export class BlackListModule { }
+export class BlackListModule {}

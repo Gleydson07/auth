@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBlackListDto } from './dto/create-black-list.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
+import { CreateBlackListDto } from '@/app/modules/auth/black-list/dto/create-black-list.dto';
 
 @Injectable()
-export class BlackListService {
+export class PrismaBlackListService {
   constructor(private readonly prismaService: PrismaService) {}
   create(createBlackList: CreateBlackListDto) {
     return this.prismaService.blackListTokens.create({

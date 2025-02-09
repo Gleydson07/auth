@@ -3,7 +3,7 @@ import { Profile } from '@/app/modules/profiles/graphQL/profile.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class User {
+export class UserEntity {
   @Field(() => Int)
   id: Number;
 

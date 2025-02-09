@@ -12,16 +12,16 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '@/utils/decorators/is-public.decorator';
-import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { BlackListRepository } from '@/app/repositories/black-list.repository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    private blackListTokens: BlackListService,
     private reflector: Reflector,
+    private blackListRepository: BlackListRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -41,7 +41,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Token não encontrado');
     }
 
-    const isRevoked = await this.blackListTokens.exists(token);
+    const isRevoked = await this.blackListRepository.exists(token);
 
     if (isRevoked) {
       throw new UnauthorizedException(

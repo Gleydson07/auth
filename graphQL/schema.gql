@@ -28,7 +28,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Mutation {
-  createUser(createUser: CreateUserDto!): User!
+  createUser(createUser: CreateUserDto!): UserEntity!
 }
 
 type Profile {
@@ -42,10 +42,10 @@ type Profile {
 }
 
 type Query {
-  findAllUsers(name: String): [User!]!
+  findAllUsers(name: String): [UserEntity!]!
 }
 
-type User {
+type UserEntity {
   active: Boolean
   address: [Address!]
   createdAt: DateTime
