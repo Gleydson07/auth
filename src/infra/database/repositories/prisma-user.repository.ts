@@ -5,111 +5,37 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { RoleEnum } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
-import { FindByEmailDto } from './dto/find-by-email-user.dto';
 import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';
-
-export const SALT = 12;
+import { CreateUserDto } from '@/app/modules/users/dto/create-user.dto';
+import { FindByEmailDto } from '@/app/modules/users/dto/find-by-email-user.dto';
+import { UpdateUserDto } from '@/app/modules/users/dto/update-user.dto';
+import { SALT, UserRepository } from '@/app/repositories/user.repository';
+import { UserRole } from '@/app/modules/users/dto/create-role.dto';
 
 @Injectable()
-export class UsersService {
+export class PrismaUserRepository implements UserRepository {
   constructor(
     private readonly prismaService: PrismaService,
     private configService: ConfigService,
   ) {}
 
   async create(data: CreateUserDto) {
-    try {
-      const userAlreadyExists = await this.findOneByEmail({
-        email: data.email,
-      });
+    const user = await this.prismaService.user.create({
+      data: data,
+    });
 
-      if (userAlreadyExists) {
-        throw new Error('Usuário já existe.');
-      }
-
-      const hash = await bcrypt.hash(data.password, SALT);
-
-      const result = await this.prismaService.user.create({
-        data: {
-          name: data.name,
-          lastname: data.lastname,
-          email: data.email,
-          password: hash,
-        },
-      });
-
-      const { password, active, ...response } = result;
-
-      return response;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  async changeRole(user: UserFromToken, role: RoleEnum, userId: number) {
-    try {
-      const roleSanitized = role.trim().toUpperCase() as RoleEnum;
-      const isValidRole = Object.values(RoleEnum).includes(roleSanitized);
-      if (!isValidRole) {
-        throw new Error('Role inválida.');
-      }
-
-      const userToUpdateRole = await this.findOneById(userId);
-
-      if (!userToUpdateRole) {
-        throw new Error('Usuário não encontrado.');
-      }
-
-      if (Number(user.sub) === Number(userId)) {
-        throw new Error('Você não pode alterar seu nível de acesso.');
-      }
-
-      await this.prismaService.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          role: roleSanitized,
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  async changeActive(user: UserFromToken, active: boolean, userId: number) {
-    try {
-      const userToUpdateRole = await this.findOneById(userId);
-
-      if (!userToUpdateRole) {
-        throw new Error('Usuário não encontrado.');
-      }
-
-      if (Number(user.sub) === Number(userId)) {
-        throw new Error('Você não pode alterar seu status.');
-      }
-
-      await this.prismaService.user.update({
-        where: {
-          id: userId,
-        },
-        data: {
-          active: active,
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return {
+      ...user,
+      role: user.role as UserRole,
+    };
   }
 
   async findAll(active?: boolean) {
-    return await this.prismaService.user.findMany({
+    const users = await this.prismaService.user.findMany({
       where: {
         active: active,
       },
@@ -121,15 +47,21 @@ export class UsersService {
         active: true,
         role: true,
         createdAt: true,
+        updatedAt: true,
       },
       orderBy: {
         name: 'asc',
       },
     });
+
+    return users.map((user) => ({
+      ...user,
+      role: user.role as UserRole,
+    }));
   }
 
   async findOneById(id: number, active?: boolean) {
-    return await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id: id, active: active },
       select: {
         id: true,
@@ -139,6 +71,37 @@ export class UsersService {
         active: true,
         role: true,
         createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return {
+      ...user,
+      role: user.role as UserRole,
+    };
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.prismaService.user.update({
+      where: {
+        id: id,
+        active: true,
+      },
+      data: {
+        name: updateUserDto?.name,
+        lastname: updateUserDto?.lastname,
+      },
+    });
+  }
+
+  async remove(id: number) {
+    await this.prismaService.user.update({
+      where: {
+        id: +id,
+      },
+      data: {
+        active: false,
+        password: generateProvisionalPasswordHash(12),
       },
     });
   }
@@ -149,11 +112,25 @@ export class UsersService {
         email: email.trim().toLowerCase(),
         active: active,
       },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        active: true,
+        role: true,
+        password: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     if (!data?.id) return null;
 
-    return data;
+    return {
+      ...data,
+      role: data.role as UserRole,
+    };
   }
 
   async generateProvisionalPassword(userId: number, password: string) {
@@ -239,6 +216,7 @@ export class UsersService {
           user: {
             select: {
               id: true,
+              name: true,
               email: true,
               password: true,
             },
@@ -303,68 +281,6 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-  }
-
-  async update(user: UserFromToken, id: number, updateUserDto: UpdateUserDto) {
-    try {
-      await this.checkIsUserAdminOrSameId({
-        userId: id,
-        userIdFromToken: user.sub,
-        messageError: 'Não é permitido alterar o cadastro de terceiros.',
-      });
-
-      await this.prismaService.user.update({
-        where: {
-          id: id,
-          active: true,
-        },
-        data: {
-          name: updateUserDto?.name,
-          lastname: updateUserDto?.lastname,
-        },
-      });
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Falha ao atualizar dados do usuário.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async remove(id: number) {
-    try {
-      const userToUpdateRole = await this.findOneById(+id);
-
-      if (!userToUpdateRole) {
-        throw new Error('Usuário não encontrado.');
-      }
-
-      return this.prismaService.user.update({
-        where: {
-          id: +id,
-        },
-        data: {
-          active: false,
-          password: generateProvisionalPasswordHash(12),
-        },
-      });
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Falha ao remover usuário.',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async updateUserAdmin(active: boolean) {
-    return await this.prismaService.user.update({
-      where: {
-        email: 'admin@admin.com',
-      },
-      data: {
-        active,
-      },
-    });
   }
 
   async checkIsUserAdminOrSameId(props: {

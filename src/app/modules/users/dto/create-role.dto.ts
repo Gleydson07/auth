@@ -1,14 +1,14 @@
-import { IsNumber, IsString } from "class-validator"
+import { IsNumber, IsString } from 'class-validator';
 
-export enum Role {
-  USER = "USER",
-  ADMIN = "ADMIN"
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
 }
 
 export class CreateRoleDto {
   @IsString()
-  role: Role
+  role: UserRole;
 
   @IsNumber()
-  userId: number
+  userId: number;
 }

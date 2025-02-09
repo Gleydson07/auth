@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { CreateBlackListDto } from '@/app/modules/auth/black-list/dto/create-black-list.dto';
+import { BlackListRepository } from '@/app/repositories/black-list.repository';
 
 @Injectable()
-export class PrismaBlackListService {
+export class PrismaBlackListRepository implements BlackListRepository {
   constructor(private readonly prismaService: PrismaService) {}
   create(createBlackList: CreateBlackListDto) {
     return this.prismaService.blackListTokens.create({
@@ -23,8 +24,8 @@ export class PrismaBlackListService {
     });
   }
 
-  remove(token: string) {
-    return this.prismaService.blackListTokens.deleteMany({
+  async remove(token: string) {
+    await this.prismaService.blackListTokens.deleteMany({
       where: {
         token: token,
       },

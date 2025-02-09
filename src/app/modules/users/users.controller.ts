@@ -10,7 +10,6 @@ import {
   HttpCode,
   Query,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
@@ -18,15 +17,30 @@ import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { RoleEnum } from '@prisma/client';
 import { OnlyAdminGuard } from '@/app/modules/auth/guards/only-admin.guard';
 import { parseBooleanOrUndefined } from '@/utils/functions/parseBoolean';
+import { ChangeUserActiveStatusUseCase } from './usecases/change-user-active-status.usecase';
+import { ChangeUserRoleUseCase } from './usecases/change-user-role.usecase';
+import { CreateUserUseCase } from './usecases/create-user.usecase';
+import { DeleteUserUseCase } from './usecases/delete-user.usecase';
+import { FindAllUsersUseCase } from './usecases/find-all-users.usecase';
+import { FindUserByIdUseCase } from './usecases/find-by-id-user.usecase';
+import { UpdateUserUseCase } from './usecases/update-user.usecase';
 
 @Controller('')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly changeUserActiveStatusUseCase: ChangeUserActiveStatusUseCase,
+    private readonly changeUserRoleUseCase: ChangeUserRoleUseCase,
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly deleteUserUseCase: DeleteUserUseCase,
+    private readonly findAllUsersUseCase: FindAllUsersUseCase,
+    private readonly findUserByIdUseCase: FindUserByIdUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
+  ) {}
 
   @UseGuards(OnlyAdminGuard)
   @Post()
   create(@Body() createUser: CreateUserDto) {
-    return this.usersService.create(createUser);
+    return this.createUserUseCase.execute(createUser);
   }
 
   @UseGuards(OnlyAdminGuard)
@@ -37,7 +51,7 @@ export class UsersController {
     @Param('userId') userId: number,
     @User() user: UserFromToken,
   ) {
-    return this.usersService.changeRole(user, role, +userId);
+    return this.changeUserRoleUseCase.execute(user, role, +userId);
   }
 
   @UseGuards(OnlyAdminGuard)
@@ -48,7 +62,7 @@ export class UsersController {
     @Param('active') active: string,
     @User() user: UserFromToken,
   ) {
-    return this.usersService.changeActive(
+    return this.changeUserActiveStatusUseCase.execute(
       user,
       active === 'true' ? true : false,
       +userId,
@@ -58,13 +72,13 @@ export class UsersController {
   @Get()
   findAll(@Query('active') active?: string) {
     const isActive = parseBooleanOrUndefined(active);
-    return this.usersService.findAll(isActive);
+    return this.findAllUsersUseCase.execute(isActive);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @Query('active') active: string) {
     const isActive = parseBooleanOrUndefined(active);
-    return this.usersService.findOneById(+id, isActive);
+    return this.findUserByIdUseCase.execute(+id, isActive);
   }
 
   @Put(':id')
@@ -73,13 +87,13 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @User() user: UserFromToken,
   ) {
-    return this.usersService.update(user, +id, updateUserDto);
+    return this.updateUserUseCase.execute(user, +id, updateUserDto);
   }
 
   @UseGuards(OnlyAdminGuard)
   @HttpCode(204)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.deleteUserUseCase.execute(+id);
   }
 }
