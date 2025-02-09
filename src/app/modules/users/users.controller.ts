@@ -13,14 +13,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '@/app/modules/auth/guards/auth.guard';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { RoleEnum } from '@prisma/client';
 import { OnlyAdminGuard } from '@/app/modules/auth/guards/only-admin.guard';
 import { parseBooleanOrUndefined } from '@/utils/functions/parseBoolean';
 
-@UseGuards(AuthGuard)
 @Controller('')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

@@ -2,7 +2,7 @@
 CREATE TYPE "RoleEnum" AS ENUM ('USER', 'ADMIN');
 
 -- CreateEnum
-CREATE TYPE "DocTypeEnum" AS ENUM ('RG', 'CPF');
+CREATE TYPE "DocTypeEnum" AS ENUM ('RG', 'CPF', 'CNH');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -20,7 +20,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateTable
-CREATE TABLE "provisional-passwords" (
+CREATE TABLE "provisional_passwords" (
     "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "provisional_password" TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE "provisional-passwords" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "provisional-passwords_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "provisional_passwords_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -56,6 +56,7 @@ CREATE TABLE "addresses" (
     "number" VARCHAR,
     "city" VARCHAR NOT NULL,
     "country" VARCHAR NOT NULL,
+    "zip_code" VARCHAR NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -63,14 +64,14 @@ CREATE TABLE "addresses" (
 );
 
 -- CreateTable
-CREATE TABLE "black-list-tokens" (
+CREATE TABLE "black_list_tokens" (
     "token" VARCHAR NOT NULL,
     "revoked_by_user_id" INTEGER NOT NULL,
     "args" VARCHAR(200) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "black-list-tokens_pkey" PRIMARY KEY ("token")
+    CONSTRAINT "black_list_tokens_pkey" PRIMARY KEY ("token")
 );
 
 -- CreateIndex
@@ -80,13 +81,16 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE INDEX "users_email_idx" ON "users"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "users_id_active_key" ON "users"("id", "active");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "profiles_user_id_key" ON "profiles"("user_id");
 
 -- CreateIndex
 CREATE INDEX "profiles_document_idx" ON "profiles"("document");
 
 -- AddForeignKey
-ALTER TABLE "provisional-passwords" ADD CONSTRAINT "provisional-passwords_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "provisional_passwords" ADD CONSTRAINT "provisional_passwords_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -95,4 +99,4 @@ ALTER TABLE "profiles" ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user
 ALTER TABLE "addresses" ADD CONSTRAINT "addresses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "black-list-tokens" ADD CONSTRAINT "black-list-tokens_revoked_by_user_id_fkey" FOREIGN KEY ("revoked_by_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "black_list_tokens" ADD CONSTRAINT "black_list_tokens_revoked_by_user_id_fkey" FOREIGN KEY ("revoked_by_user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -4,19 +4,17 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug Nest.js Application",
-      "program": "${workspaceFolder}/node_modules/.bin/nest",
-      "args": [
-        "start",
-        "--debug",
-        "0.0.0.0:9229"
+      "name": "Debug Nest Framework",
+      "args": ["${workspaceFolder}/src/main.ts"],
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
       ],
-      "restart": true,
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}"
     }
   ]
 }

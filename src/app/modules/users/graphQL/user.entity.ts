@@ -1,5 +1,5 @@
 import { Address } from '@/app/modules/addresses/entities/address.entity';
-import { Profile } from '@/app/modules/profiles/entities/profile.entity';
+import { Profile } from '@/app/modules/profiles/graphQL/profile.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()

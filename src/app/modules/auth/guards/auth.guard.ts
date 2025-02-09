@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from '@/utils/decorators/skip-auth.decorator';
+import { IS_PUBLIC_KEY } from '@/utils/decorators/is-public.decorator';
 import { BlackListService } from '@/app/modules/auth/black-list/black-list.service';
 import { GqlExecutionContext } from '@nestjs/graphql';
 

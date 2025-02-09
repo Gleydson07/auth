@@ -12,6 +12,6 @@ import { RabbitmqModule } from '@/infra/services/rabbitmq/rabbitmq.module';
   imports: [UsersModule, ConfigModule, RabbitmqModule],
   providers: [AuthService, JwtService, BlackListService, MailerService],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [JwtService, BlackListService, AuthService],
 })
 export class AuthModule {}

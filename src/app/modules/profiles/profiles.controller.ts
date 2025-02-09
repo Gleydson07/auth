@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
   Put,
   Param,
   Delete,
@@ -12,11 +11,9 @@ import {
 import { ProfilesService } from './profiles.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { AuthGuard } from '@/app/modules/auth/guards/auth.guard';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 
-@UseGuards(AuthGuard)
 @Controller()
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}

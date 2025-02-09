@@ -17,6 +17,8 @@ import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './app/modules/users/users.module';
+import { AuthGuard } from './app/modules/auth/guards/auth.guard';
+import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
@@ -54,7 +56,6 @@ export const prefix = 'ms-auth/api/v1';
       ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
-      context: ({ req }) => ({ req }),
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'graphQL/schema.gql'),
       path: `${prefix}/graphql`,
@@ -88,7 +89,11 @@ export const prefix = 'ms-auth/api/v1';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: GraphQLThrottlerGuard,
     },
   ],
 })

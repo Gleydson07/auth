@@ -1,11 +1,8 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { User } from './user.entity';
 import { UserGraphqlService } from './user.gql.service';
-import { AuthGuard } from '@/app/modules/auth/guards/auth.guard';
-import { UseGuards } from '@nestjs/common';
-import { CreateUserDto } from '../../dto/create-user.dto';
-import { User } from '../../entities/user.entity';
 
-@UseGuards(AuthGuard)
 @Resolver(() => User)
 export class UserGraphqlResolver {
   constructor(private readonly userGraphqlService: UserGraphqlService) {}

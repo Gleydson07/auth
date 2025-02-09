@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   Delete,
-  UseGuards,
   Put,
   HttpCode,
 } from '@nestjs/common';
@@ -14,9 +13,7 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
-import { AuthGuard } from '@/app/modules/auth/guards/auth.guard';
 
-@UseGuards(AuthGuard)
 @Controller()
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}

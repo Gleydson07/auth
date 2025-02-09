@@ -1,10 +1,9 @@
-import { IsString } from "class-validator"
-import { Auth } from "../entities/auth.entity"
+import { IsString } from 'class-validator';
 
-export class SignInAuthDto extends Auth{
+export class SignInAuthDto {
   @IsString()
-  email: string
+  email: string;
 
   @IsString()
-  password: string
+  password: string;
 }
