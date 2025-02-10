@@ -2,13 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
-import { UsersService } from '../users/users.service';
+import { UserRepository } from '@/app/repositories/user.repository';
 
 @Injectable()
 export class ProfilesService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly userService: UsersService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async create(
@@ -21,7 +21,7 @@ export class ProfilesService {
         throw new Error('Id do usuário não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: userId,
         userIdFromToken: userIdFromToken,
         messageError: 'Usuário sem autorização para cadastrar perfil.',
@@ -65,7 +65,7 @@ export class ProfilesService {
     updateProfile: UpdateProfileDto,
   ) {
     try {
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: userId,
         userIdFromToken: userIdFromToken,
         messageError: 'Não é permitido alterar o perfil de terceiros.',
@@ -103,7 +103,7 @@ export class ProfilesService {
 
   async remove(userId: number, userIdFromToken: number) {
     try {
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: userId,
         userIdFromToken: userIdFromToken,
         messageError: 'Não é permitido remover o perfil de terceiros.',

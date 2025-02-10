@@ -3,13 +3,13 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
-import { UsersService } from '../users/users.service';
+import { UserRepository } from '@/app/repositories/user.repository';
 
 @Injectable()
 export class AddressesService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly userService: UsersService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async create(
@@ -22,7 +22,7 @@ export class AddressesService {
         throw new Error('Id do usuário não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
         messageError: 'Usuário sem autorização para cadastrar endereço.',
@@ -53,7 +53,7 @@ export class AddressesService {
         throw new Error('Id do usuário não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
         messageError: 'Usuário sem autorização para consultar endereços.',
@@ -89,7 +89,7 @@ export class AddressesService {
         throw new Error('Id do endereço não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
         messageError: 'Usuário sem autorização para consultar endereço.',
@@ -133,7 +133,7 @@ export class AddressesService {
         throw new Error('Id do endereço não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
         messageError: 'Usuário sem autorização para atualizar endereço.',
@@ -182,7 +182,7 @@ export class AddressesService {
         throw new Error('Id do endereço não informado.');
       }
 
-      await this.userService.checkIsUserAdminOrSameId({
+      await this.userRepository.checkIsUserAdminOrSameId({
         userId: +userId,
         userIdFromToken: user.sub,
         messageError: 'Usuário sem autorização para remover endereço.',

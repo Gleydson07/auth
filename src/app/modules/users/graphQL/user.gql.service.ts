@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
-import { UsersService } from '../users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserEntity } from './user.entity';
+import { UserRepository } from '@/app/repositories/user.repository';
 
 export const SALT = 12;
 
@@ -11,12 +11,12 @@ export const SALT = 12;
 export class UserGraphqlService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly userService: UsersService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async create(data: CreateUserDto) {
     try {
-      const userAlreadyExists = await this.userService.findOneByEmail({
+      const userAlreadyExists = await this.userRepository.findOneByEmail({
         email: data.email,
       });
 

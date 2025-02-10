@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ScheduledTasksService } from './scheduled-tasks.service';
-import { UsersService } from '@/app/modules/users/users.service';
+import { UsersModule } from '@/app/modules/users/users.module';
+import { ProvisionalPasswordModule } from '@/app/modules/auth/provisional-password/provisional-password.module';
 
 @Module({
+  imports: [UsersModule, ProvisionalPasswordModule],
   controllers: [],
-  providers: [ScheduledTasksService, UsersService],
+  providers: [ScheduledTasksService],
 })
 export class ScheduledTasksModule {}

@@ -12,14 +12,14 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { RoleEnum } from '@prisma/client';
-import { UsersService } from '../../users/users.service';
+import { UserRepository } from '@/app/repositories/user.repository';
 
 @Injectable()
 export class OnlyAdminGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    private userService: UsersService,
+    private userRepository: UserRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,7 +35,7 @@ export class OnlyAdminGuard implements CanActivate {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      const user = await this.userService.findOneById(payload.sub);
+      const user = await this.userRepository.findOneById(payload.sub);
 
       if (!user || (user && user.role !== RoleEnum.ADMIN)) {
         throw new Error('Usuário sem permissão para esta ação!');

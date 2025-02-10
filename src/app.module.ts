@@ -19,6 +19,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './app/modules/users/users.module';
 import { AuthGuard } from './app/modules/auth/guards/auth.guard';
 import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';
+import { ProvisionalPasswordModule } from './app/modules/auth/provisional-password/provisional-password.module';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
@@ -70,6 +71,7 @@ export const prefix = 'ms-auth/api/v1';
     UsersModule,
     BlackListModule,
     ProfilesModule,
+    ProvisionalPasswordModule,
     AddressesModule,
     MailerModule,
     ScheduledTasksModule,
