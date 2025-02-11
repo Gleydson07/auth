@@ -2,7 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Address {
+type AddressEntity {
   city: String!
   country: String!
   createdAt: DateTime!
@@ -47,7 +47,7 @@ type Query {
 
 type UserEntity {
   active: Boolean
-  address: [Address!]
+  address: [AddressEntity!]
   createdAt: DateTime
   email: String!
   id: Int!
