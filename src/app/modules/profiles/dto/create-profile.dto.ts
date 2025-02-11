@@ -1,26 +1,32 @@
-import { DocTypeEnum } from "@prisma/client"
-import { IsOptional, IsString } from "class-validator"
+import { DocTypeEnum } from '@prisma/client';
+import { IsOptional, IsString } from 'class-validator';
 
 export enum GenderEnum {
-  Masc = "M",
-  Fem = "F",
-  Other = "Other"
+  Masc = 'M',
+  Fem = 'F',
+  Other = 'Other',
+}
+
+export enum DocumentTypeEnum {
+  RG = 'RG',
+  CPF = 'CPF',
+  CNH = 'CNH',
 }
 
 export class CreateProfileDto {
   @IsOptional()
   @IsString()
-  birthDay?: Date
+  birthDay?: Date;
 
   @IsOptional()
-  gender?: GenderEnum
+  gender?: GenderEnum;
 
   @IsOptional()
-  phone?: string
+  phone?: string;
 
   @IsOptional()
-  document?: string
+  document?: string;
 
   @IsOptional()
-  documentType?: DocTypeEnum
+  documentType?: DocumentTypeEnum;
 }
