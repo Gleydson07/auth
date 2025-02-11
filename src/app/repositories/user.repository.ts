@@ -3,6 +3,7 @@ import { ResponseUserDto } from '../modules/users/dto/response-user.dto';
 import { CreateUserDto } from '../modules/users/dto/create-user.dto';
 import { FindByEmailDto } from '../modules/users/dto/find-by-email-user.dto';
 import { UpdateUserDto } from '../modules/users/dto/update-user.dto';
+import { ResponseUserWithAggregatesDto } from '../modules/users/dto/response-user-with-aggregates.dto';
 
 export const SALT = 12;
 
@@ -11,6 +12,10 @@ export abstract class UserRepository {
   abstract create(data: CreateUserDto): Promise<ResponseUserDto>;
 
   abstract findAll(active?: boolean): Promise<ResponseUserDto[]>;
+
+  abstract findAllWithAggregates(
+    name?: string,
+  ): Promise<ResponseUserWithAggregatesDto[]>;
 
   abstract findOneById(id: number, active?: boolean): Promise<ResponseUserDto>;
 

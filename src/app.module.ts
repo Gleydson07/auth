@@ -15,7 +15,7 @@ import { join } from 'path';
 import { RabbitmqModule } from './infra/services/rabbitmq/rabbitmq.module';
 import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './app/modules/users/users.module';
 import { AuthGuard } from './app/modules/auth/guards/auth.guard';
 import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';

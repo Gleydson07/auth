@@ -1,9 +1,9 @@
-import { Profile } from '@/app/modules/profiles/graphQL/profile.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { AddressEntity } from '../../addresses/entities/address.entity';
+import { ResponseAddressDto } from '../../addresses/dto/response-address.dto';
+import { ResponseProfileDto } from '../../profiles/dto/response-profile.dto';
 
 @ObjectType()
-export class UserEntity {
+export class ResponseUserWithAggregatesDto {
   @Field(() => Int)
   id: Number;
 
@@ -24,11 +24,11 @@ export class UserEntity {
   @Field({ nullable: true })
   role?: string;
 
-  @Field(() => [AddressEntity], { nullable: true })
-  address?: AddressEntity[];
+  @Field(() => [ResponseAddressDto], { nullable: true })
+  address?: ResponseAddressDto[];
 
-  @Field(() => Profile, { nullable: true })
-  profile?: Profile;
+  @Field(() => ResponseProfileDto, { nullable: true })
+  profile?: ResponseProfileDto;
 
   @Field({ nullable: true })
   createdAt?: Date;

@@ -7,6 +7,7 @@ import { FindByEmailDto } from '@/app/modules/users/dto/find-by-email-user.dto';
 import { UpdateUserDto } from '@/app/modules/users/dto/update-user.dto';
 import { UserRepository } from '@/app/repositories/user.repository';
 import { UserRole } from '@/app/modules/users/dto/create-role.dto';
+import { DocumentTypeEnum } from '@/app/modules/profiles/dto/create-profile.dto';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -15,6 +16,17 @@ export class PrismaUserRepository implements UserRepository {
   async create(data: CreateUserDto) {
     const user = await this.prismaService.user.create({
       data: data,
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        password: false,
+        active: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     return {
@@ -33,6 +45,7 @@ export class PrismaUserRepository implements UserRepository {
         name: true,
         lastname: true,
         email: true,
+        password: false,
         active: true,
         role: true,
         createdAt: true,
@@ -49,6 +62,52 @@ export class PrismaUserRepository implements UserRepository {
     }));
   }
 
+  async findAllWithAggregates(name?: string) {
+    const users = await this.prismaService.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+          {
+            lastname: {
+              contains: name,
+              mode: 'insensitive',
+            },
+          },
+        ],
+        active: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true,
+        active: true,
+        role: true,
+        address: true,
+        profile: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return users.map((user) => ({
+      ...user,
+      role: user.role as UserRole,
+      profile: {
+        ...user.profile,
+        documentType: user.profile.documentType as DocumentTypeEnum,
+      },
+    }));
+  }
+
   async findOneById(id: number, active?: boolean) {
     const user = await this.prismaService.user.findUnique({
       where: { id: id, active: active },
@@ -57,6 +116,7 @@ export class PrismaUserRepository implements UserRepository {
         name: true,
         lastname: true,
         email: true,
+        password: false,
         active: true,
         role: true,
         createdAt: true,

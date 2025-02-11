@@ -19,12 +19,16 @@ export class CreateUserUseCase {
 
       const hash = await bcrypt.hash(data.password, SALT);
 
-      return this.userRepository.create({
+      const result = await this.userRepository.create({
         name: data.name,
         lastname: data.lastname,
         email: data.email.trim().toLowerCase(),
         password: hash,
       });
+
+      const { active, ...response } = result;
+
+      return response;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

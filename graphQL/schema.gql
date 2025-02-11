@@ -2,19 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AddressEntity {
-  city: String!
-  country: String!
-  createdAt: DateTime!
-  id: Int!
-  neighborhood: String!
-  number: String
-  street: String
-  updatedAt: DateTime!
-  userId: Int!
-  zipCode: String!
-}
-
 input CreateUserDto {
   email: String!
   lastname: String!
@@ -28,32 +15,46 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Mutation {
-  createUser(createUser: CreateUserDto!): UserEntity!
+  createUser(createUser: CreateUserDto!): ResponseUserWithAggregatesDto!
 }
 
-type Profile {
+type Query {
+  findAllUsers(name: String): [ResponseUserWithAggregatesDto!]!
+}
+
+type ResponseAddressDto {
+  city: String!
+  country: String!
+  createdAt: DateTime!
+  id: Int!
+  neighborhood: String!
+  number: String
+  street: String
+  updatedAt: DateTime!
+  userId: Int!
+  zipCode: String!
+}
+
+type ResponseProfileDto {
   birthDay: DateTime
   createdAt: DateTime
+  document: String!
+  documentType: String!
   gender: String
   id: Int!
-  mainRegistration: String
   updatedAt: DateTime
   userId: Int!
 }
 
-type Query {
-  findAllUsers(name: String): [UserEntity!]!
-}
-
-type UserEntity {
+type ResponseUserWithAggregatesDto {
   active: Boolean
-  address: [AddressEntity!]
+  address: [ResponseAddressDto!]
   createdAt: DateTime
   email: String!
   id: Int!
   lastname: String!
   name: String!
-  profile: Profile
+  profile: ResponseProfileDto
   role: String
   updatedAt: DateTime
 }

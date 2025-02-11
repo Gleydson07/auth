@@ -1,13 +1,29 @@
-import { DocumentTypeEnum, GenderEnum } from './create-profile.dto';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { DocumentTypeEnum } from './create-profile.dto';
 
+@ObjectType()
 export class ResponseProfileDto {
-  id: number;
-  userId: number;
+  @Field(() => Int)
+  id: Number;
+
+  @Field(() => Int)
+  userId: Number;
+
+  @Field({ nullable: true })
   birthDay?: Date;
-  phone?: string;
-  gender?: GenderEnum;
-  document: string;
-  documentType?: DocumentTypeEnum;
-  createdAt: Date;
-  updatedAt: Date;
+
+  @Field({ nullable: true })
+  gender?: String;
+
+  @Field()
+  document: String;
+
+  @Field()
+  documentType: DocumentTypeEnum;
+
+  @Field({ nullable: true })
+  createdAt?: Date;
+
+  @Field({ nullable: true })
+  updatedAt?: Date;
 }

@@ -5,6 +5,7 @@ export class ResponseUserDto {
   name: string;
   lastname: string;
   email: string;
+  active: boolean;
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;

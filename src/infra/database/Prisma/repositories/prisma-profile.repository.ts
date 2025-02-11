@@ -38,6 +38,10 @@ export class PrismaProfileRepository implements ProfileRepository {
       where: { userId },
     });
 
+    if (!profile) {
+      return null;
+    }
+
     return {
       ...profile,
       gender: profile.gender as GenderEnum,

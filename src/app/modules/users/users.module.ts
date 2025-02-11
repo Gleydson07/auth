@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UserGraphqlService } from './graphQL/user.gql.service';
 import { UserGraphqlResolver } from './graphQL/user.gql.resolver';
 import { ChangeUserActiveStatusUseCase } from './usecases/change-user-active-status.usecase';
 import { PrismaUserRepository } from '@/infra/database/Prisma/repositories/prisma-user.repository';
@@ -13,6 +12,7 @@ import { DeleteUserUseCase } from './usecases/delete-user.usecase';
 import { FindAllUsersUseCase } from './usecases/find-all-users.usecase';
 import { FindUserByIdUseCase } from './usecases/find-by-id-user.usecase';
 import { UpdateUserUseCase } from './usecases/update-user.usecase';
+import { FindAllWithAggregatesUsersUseCase } from './usecases/find-all-with-aggregates-users.usecase';
 
 @Module({
   imports: [ConfigModule],
@@ -20,12 +20,12 @@ import { UpdateUserUseCase } from './usecases/update-user.usecase';
   providers: [
     JwtService,
     UserGraphqlResolver,
-    UserGraphqlService,
     ChangeUserActiveStatusUseCase,
     ChangeUserRoleUseCase,
     CreateUserUseCase,
     DeleteUserUseCase,
     FindAllUsersUseCase,
+    FindAllWithAggregatesUsersUseCase,
     FindUserByIdUseCase,
     UpdateUserUseCase,
     {
