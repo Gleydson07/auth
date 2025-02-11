@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseLoginCredentialsDto } from '../modules/auth/black-list/dto/response-credentials.dto';
-import { ResponseBlackListDto } from '../modules/auth/black-list/dto/response-black-list.dto';
+import { ResponseLoginCredentialsDto } from '../modules/black-list/dto/response-credentials.dto';
+import { ResponseBlackListDto } from '../modules/black-list/dto/response-black-list.dto';
 import { SignInAuthDto } from '../modules/auth/dto/sign-in.dto';
 import { UserFromToken } from '../modules/auth/dto/token-payload.dto';
 import { UpdatePasswordDto } from '../modules/auth/dto/update-password.dto';

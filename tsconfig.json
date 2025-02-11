@@ -20,7 +20,7 @@
     "paths": {
       "@/*": ["src/*"],
       "@auth/*": ["src/app/modules/auth/*"],
-      "@blacklist/*": ["src/app/modules/auth/black-list/*"],
+      "@blacklist/*": ["src/app/modules/black-list/*"],
       "@database/*": ["src/infra/database/*"],
       "@users/*": ["src/users/*"],
       "@utils/*": ["src/utils/*"]

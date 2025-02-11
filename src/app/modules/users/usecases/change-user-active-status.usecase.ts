@@ -1,7 +1,8 @@
 import { UserRepository } from '@/app/repositories/user.repository';
 import { UserFromToken } from '../../auth/dto/token-payload.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ChangeUserActiveStatusUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 

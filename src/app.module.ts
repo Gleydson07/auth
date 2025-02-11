@@ -6,7 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { AuthModule } from './app/modules/auth/auth.module';
 import { DatabaseModule } from './infra/database/database.module';
-import { BlackListModule } from './app/modules/auth/black-list/black-list.module';
+import { BlackListModule } from './app/modules/black-list/black-list.module';
 import { ProfilesModule } from './app/modules/profiles/profiles.module';
 import { AddressesModule } from './app/modules/addresses/addresses.module';
 import { MailerModule } from './infra/services/mailer/mailer.module';
@@ -19,7 +19,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './app/modules/users/users.module';
 import { AuthGuard } from './app/modules/auth/guards/auth.guard';
 import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';
-import { ProvisionalPasswordModule } from './app/modules/auth/provisional-password/provisional-password.module';
+import { ProvisionalPasswordModule } from './app/modules/provisional-password/provisional-password.module';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);

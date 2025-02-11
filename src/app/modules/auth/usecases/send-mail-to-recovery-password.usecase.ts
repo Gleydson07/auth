@@ -6,9 +6,10 @@ import { templateRecoveryPassword } from '@/infra/services/mailer/templates/reco
 import { templateFormatter } from '@/infra/services/mailer/utils/replacer';
 import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
 import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+@Injectable()
 export class SendMailToRecoveryPasswordUseCase {
   constructor(
     private readonly configService: ConfigService,

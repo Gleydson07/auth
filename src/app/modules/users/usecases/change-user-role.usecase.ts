@@ -2,8 +2,9 @@ import { RoleEnum } from '@prisma/client';
 import { UserFromToken } from '../../auth/dto/token-payload.dto';
 import { UserRepository } from '@/app/repositories/user.repository';
 import { UserRole } from '../dto/create-role.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ChangeUserRoleUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 

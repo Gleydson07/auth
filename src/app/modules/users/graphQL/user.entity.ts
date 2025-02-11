@@ -1,6 +1,6 @@
-import { Address } from '@/app/modules/addresses/entities/address.entity';
 import { Profile } from '@/app/modules/profiles/graphQL/profile.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { AddressEntity } from '../../addresses/entities/address.entity';
 
 @ObjectType()
 export class UserEntity {
@@ -24,8 +24,8 @@ export class UserEntity {
   @Field({ nullable: true })
   role?: string;
 
-  @Field(() => [Address], { nullable: true })
-  address?: Address[];
+  @Field(() => [AddressEntity], { nullable: true })
+  address?: AddressEntity[];
 
   @Field(() => Profile, { nullable: true })
   profile?: Profile;

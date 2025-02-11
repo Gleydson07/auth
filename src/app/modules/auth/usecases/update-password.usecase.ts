@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '@/app/repositories/user.repository';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class UpdatePasswordUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 

@@ -1,6 +1,7 @@
 import { UserRepository } from '@/app/repositories/user.repository';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class DeleteUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 

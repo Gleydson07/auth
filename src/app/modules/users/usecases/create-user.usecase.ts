@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { SALT, UserRepository } from '@/app/repositories/user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CreateUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 

@@ -1,34 +1,34 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql"
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class Address {
+export class AddressEntity {
   @Field(() => Int)
-  id: Number
+  id: Number;
 
   @Field(() => Int)
-  userId: Number
+  userId: Number;
 
   @Field()
-  neighborhood: String
+  neighborhood: String;
 
   @Field({ nullable: true })
-  street?: String
+  street?: String;
 
   @Field({ nullable: true })
-  number?: String
+  number?: String;
 
   @Field()
-  city: String
+  city: String;
 
   @Field()
-  country: String
+  country: String;
 
   @Field()
-  zipCode: String
+  zipCode: String;
 
   @Field()
-  createdAt: Date
+  createdAt: Date;
 
   @Field()
-  updatedAt: Date
+  updatedAt: Date;
 }

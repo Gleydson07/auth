@@ -1,24 +1,23 @@
-import { IsOptional, IsString } from "class-validator";
-import { Address } from "../entities/address.entity";
+import { IsOptional, IsString } from 'class-validator';
 
-export class CreateAddressDto extends Address {
+export class CreateAddressDto {
   @IsString()
-  neighborhood: string
-
-  @IsOptional()
-  @IsString()
-  street?: string
+  neighborhood: string;
 
   @IsOptional()
   @IsString()
-  number?: string
+  street?: string;
+
+  @IsOptional()
+  @IsString()
+  number?: string;
 
   @IsString()
-  city: string
+  city: string;
 
   @IsString()
-  country: string
+  country: string;
 
   @IsString()
-  zipCode: string
+  zipCode: string;
 }

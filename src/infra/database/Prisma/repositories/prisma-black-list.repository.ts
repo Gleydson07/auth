@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
-import { CreateBlackListDto } from '@/app/modules/auth/black-list/dto/create-black-list.dto';
+import { CreateBlackListDto } from '@/app/modules/black-list/dto/create-black-list.dto';
 import { BlackListRepository } from '@/app/repositories/black-list.repository';
 
 @Injectable()

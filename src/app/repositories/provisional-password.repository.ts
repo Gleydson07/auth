@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ResponseUserCredentialsDto } from '../modules/users/dto/response-user-credentials.dto';
-import { UpdateProvisionalPasswordDto } from '../modules/auth/provisional-password/dto/update-provisional-password.dto';
+import { UpdateProvisionalPasswordDto } from '../modules/provisional-password/dto/update-provisional-password.dto';
 
 @Injectable()
 export abstract class ProvisionalPasswordRepository {

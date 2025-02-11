@@ -4,11 +4,13 @@ import { SignInAuthDto } from '../dto/sign-in.dto';
 import {
   HttpException,
   HttpStatus,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@/app/repositories/user.repository';
 
+@Injectable()
 export class SignInUseCase {
   constructor(
     private userRepository: UserRepository,

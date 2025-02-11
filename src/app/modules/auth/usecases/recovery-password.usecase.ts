@@ -1,9 +1,10 @@
 import { SALT, UserRepository } from '@/app/repositories/user.repository';
 import { RecoveryPasswordDto } from '../dto/recovery-password.dto';
 import * as bcrypt from 'bcrypt';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ProvisionalPasswordRepository } from '@/app/repositories/provisional-password.repository';
 
+@Injectable()
 export class RecoveryPasswordUseCase {
   constructor(
     private readonly userRepository: UserRepository,

@@ -2,12 +2,14 @@ import { BlackListRepository } from '@/app/repositories/black-list.repository';
 import {
   HttpException,
   HttpStatus,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RevokeTokenUseCase } from './revoke-token.usecase';
 
+@Injectable()
 export class RefreshTokenUseCase {
   constructor(
     private readonly configService: ConfigService,

@@ -1,7 +1,8 @@
 import { BlackListRepository } from '@/app/repositories/black-list.repository';
 import { UserFromToken } from '../dto/token-payload.dto';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RevokeTokenUseCase {
   constructor(private blackListRepository: BlackListRepository) {}
 

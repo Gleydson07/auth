@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBlackListDto } from '@/app/modules/auth/black-list/dto/create-black-list.dto';
-import { ResponseBlackListDto } from '../modules/auth/black-list/dto/response-black-list.dto';
+import { CreateBlackListDto } from '@/app/modules/black-list/dto/create-black-list.dto';
+import { ResponseBlackListDto } from '../modules/black-list/dto/response-black-list.dto';
 
 @Injectable()
 export abstract class BlackListRepository {
