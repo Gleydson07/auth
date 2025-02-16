@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    container_name: postgres
+    container_name: auth-db
     image: postgres:17.0
     environment:
       - POSTGRES_USER=${PG_USER}
@@ -18,3 +18,7 @@ services:
 volumes:
   postgres_data:
     driver: local
+
+networks:
+  external_net:
+    external: true

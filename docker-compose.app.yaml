@@ -25,8 +25,14 @@ services:
       - RABBITMQ_EXCHANGE_NAME=${RABBITMQ_EXCHANGE_NAME}
       - RABBITMQ_EXCHANGE_TYPE=${RABBITMQ_EXCHANGE_TYPE}
       - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@${RABBITMQ_HOST}:${RABBITMQ_PORT}/${RABBITMQ_VIRTUAL_HOST}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME}
     ports:
       - '127.0.0.1:${APP_PORT}:3000'
     env_file:
       - .env
     restart: always
+
+networks:
+  external_net:
+    external: true
