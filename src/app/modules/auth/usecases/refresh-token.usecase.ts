@@ -23,9 +23,10 @@ export class RefreshTokenUseCase {
         throw new UnauthorizedException('Token não encontrado.');
       }
 
-      const tokenSecret = this.configService.get<string>('JWT_SECRET');
-      const refreshTokenSecret =
-        this.configService.get<string>('JWT_SECRET_REFRESH');
+      const tokenSecret = this.configService.get<string>('JWT_PRIVATE_SECRET');
+      const refreshTokenSecret = this.configService.get<string>(
+        'JWT_PRIVATE_SECRET_REFRESH',
+      );
       const tokenExpiresIn = this.configService.get<string>(
         'JWT_TOKEN_EXPIRES_IN',
       );

@@ -14,3 +14,15 @@
 #### TESTE DE ESTRESSE NO FLUXO DE CRIACAO DE USUARIOS E RECUPERACAO DE SENHA
 
 #### AVALIAR FERRAMENTAS DE ENVIO DE SMS (OPCIONAL)
+
+## NOTES
+
+#### Commands to generate jwt secrets
+
+###### Gerar a chave privada:
+
+openssl genrsa -out private.key 2048
+
+###### Gerar a chave pública a partir da chave privada:
+
+openssl rsa -in private.key -pubout -out public.key

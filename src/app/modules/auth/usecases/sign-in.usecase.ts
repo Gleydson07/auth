@@ -41,25 +41,27 @@ export class SignInUseCase {
         email: user.email,
       };
 
-      const tokenSecret = this.configService.get<string>('JWT_SECRET');
-      const refreshTokenSecret =
-        this.configService.get<string>('JWT_SECRET_REFRESH');
-      const tokenExpiresIn = this.configService.get<string>(
-        'JWT_TOKEN_EXPIRES_IN',
+      const refreshTokenSecret = this.configService.get<string>(
+        'JWT_PRIVATE_SECRET_REFRESH',
       );
       const refreshTokenExpiresIn = this.configService.get<string>(
         'JWT_REFRESH_TOKEN_EXPIRES_IN',
       );
 
+      const accessToken = await this.jwtService.signAsync(payload, {
+        secret: this.configService.get<string>('JWT_PRIVATE_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRES_IN'),
+        algorithm: 'HS256',
+      });
+      const refreshToken = await this.jwtService.signAsync(payload, {
+        secret: refreshTokenSecret,
+        expiresIn: refreshTokenExpiresIn,
+        algorithm: 'HS256',
+      });
+
       return {
-        accessToken: await this.jwtService.signAsync(payload, {
-          secret: tokenSecret,
-          expiresIn: tokenExpiresIn,
-        }),
-        refreshToken: await this.jwtService.signAsync(payload, {
-          secret: refreshTokenSecret,
-          expiresIn: refreshTokenExpiresIn,
-        }),
+        accessToken,
+        refreshToken,
       };
     } catch (error) {
       throw new HttpException(

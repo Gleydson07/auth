@@ -32,7 +32,7 @@ export class OnlyAdminGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.configService.get<string>('JWT_PRIVATE_SECRET'),
       });
 
       const user = await this.userRepository.findOneById(payload.sub);

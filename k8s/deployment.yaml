@@ -13,39 +13,39 @@ spec:
         app: app-auth
     spec:
       containers:
-      - name: app-auth
-        image: gleydsondev/auth:1.0
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        ports:
-          - containerPort: 3000
-        env:
-          - name: JWT_SECRET
-            value: fa53b91ccc1b78668d5af58e1ed3a485
-          - name: JWT_SECRET_REFRESH
-            value: 1837d489045f08bbe76b193b0d12a969
-          - name: JWT_TOKEN_EXPIRES_IN
-            value: 15min
-          - name: JWT_REFRESH_TOKEN_EXPIRES_IN
-            value: 1d
-          - name: MAIL_HOST
-            value: smtp.zoho.com
-          - name: MAIL_PORT
-            value: '465'
-          - name: MAIL_SECURE
-            value: 'true'
-          - name: MAIL_DEFAULT_SENDER
-            value: no-reply@gsantos.dev.br
-          - name: MAIL_PASS
-            value: '#2i2Ga2URuQKUs4'
-          - name: MAIL_APP_NAME
-            value: GSantos Developer
-          - name: MAIL_REDIRECT
-            value: no-reply@gsantos.dev.br
-          - name: DATABASE_URL
-            value: postgresql://user-auth:pass-auth@postgres:5432/db-auth?schema=public&connect_timeout=300&connection_limit=5
+        - name: app-auth
+          image: gleydsondev/auth:1.0
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 3000
+          env:
+            - name: JWT_PRIVATE_SECRET
+              value: fa53b91ccc1b78668d5af58e1ed3a485
+            - name: JWT_PRIVATE_SECRET_REFRESH
+              value: 1837d489045f08bbe76b193b0d12a969
+            - name: JWT_TOKEN_EXPIRES_IN
+              value: 15min
+            - name: JWT_REFRESH_TOKEN_EXPIRES_IN
+              value: 1d
+            - name: MAIL_HOST
+              value: smtp.zoho.com
+            - name: MAIL_PORT
+              value: '465'
+            - name: MAIL_SECURE
+              value: 'true'
+            - name: MAIL_DEFAULT_SENDER
+              value: no-reply@gsantos.dev.br
+            - name: MAIL_PASS
+              value: '#2i2Ga2URuQKUs4'
+            - name: MAIL_APP_NAME
+              value: GSantos Developer
+            - name: MAIL_REDIRECT
+              value: no-reply@gsantos.dev.br
+            - name: DATABASE_URL
+              value: postgresql://user-auth:pass-auth@postgres:5432/db-auth?schema=public&connect_timeout=300&connection_limit=5
 ---
 apiVersion: v1
 kind: Service
@@ -55,7 +55,6 @@ spec:
   selector:
     app: app-auth
   ports:
-  - port: 80
-    targetPort: 5000
+    - port: 80
+      targetPort: 5000
   type: LoadBalancer
-
