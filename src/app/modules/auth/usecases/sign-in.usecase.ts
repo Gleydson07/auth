@@ -49,9 +49,9 @@ export class SignInUseCase {
       );
 
       const accessToken = await this.jwtService.signAsync(payload, {
-        secret: this.configService.get<string>('JWT_PRIVATE_SECRET'),
+        privateKey: this.configService.get<string>('JWT_PRIVATE_SECRET'),
         expiresIn: this.configService.get<string>('JWT_TOKEN_EXPIRES_IN'),
-        algorithm: 'HS256',
+        algorithm: 'RS256',
       });
       const refreshToken = await this.jwtService.signAsync(payload, {
         secret: refreshTokenSecret,
