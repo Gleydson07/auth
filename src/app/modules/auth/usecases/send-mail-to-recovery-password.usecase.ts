@@ -13,7 +13,6 @@ export class SendMailToRecoveryPasswordUseCase {
   constructor(
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
-    // private readonly provisionalPasswordRepository: ProvisionalPasswordRepository,
     private readonly rabbitmqService: RabbitmqService,
     private readonly eventBus: EventBusService,
   ) {}
