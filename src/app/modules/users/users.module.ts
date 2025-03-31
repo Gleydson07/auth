@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
-import { ConfigModule } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { UserGraphqlResolver } from './graphQL/user.gql.resolver';
 import { ChangeUserActiveStatusUseCase } from './usecases/change-user-active-status.usecase';
 import { PrismaUserRepository } from '@/infra/database/Prisma/repositories/prisma-user.repository';
@@ -15,10 +13,9 @@ import { UpdateUserUseCase } from './usecases/update-user.usecase';
 import { FindAllWithAggregatesUsersUseCase } from './usecases/find-all-with-aggregates-users.usecase';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [],
   controllers: [UsersController],
   providers: [
-    JwtService,
     UserGraphqlResolver,
     ChangeUserActiveStatusUseCase,
     ChangeUserRoleUseCase,

@@ -1,21 +1,23 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 import * as amqp from 'amqplib';
-import { SendMessageRabbitDTO } from "./dto/send-message.rabbit.dto";
+import { exchangeList } from './config/channels';
+import { IPublishMessage } from './dto/publish-message.dto';
+import { IExchange } from './dto/exchange.dto';
 
 @Injectable()
 export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
   private channel: amqp.Channel;
   private connection: amqp.Connection;
   private readonly url: string;
-  private readonly exchangeName: string;
-  private readonly exchangeType: string;
-  private localQueue: { routingKey: string; message: any }[] = [];
+  private localQueue: {
+    exchange: string;
+    routingKey: string;
+    message: any;
+  }[] = [];
 
   constructor(private readonly configService: ConfigService) {
     this.url = this.configService.get<string>('RABBITMQ_URL');
-    this.exchangeName = this.configService.get<string>('RABBITMQ_EXCHANGE_NAME');
-    this.exchangeType = this.configService.get<string>('RABBITMQ_EXCHANGE_TYPE');
   }
 
   async onModuleInit() {
@@ -27,16 +29,17 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     if (this.connection) await this.connection.close();
   }
 
-  async publishMessage({ routingKey, message }: SendMessageRabbitDTO) {
+  async publishMessage(msg: IPublishMessage) {
     try {
-      const messageBuffer = Buffer.from(JSON.stringify(message));
-      this.channel.publish(this.exchangeName, routingKey, messageBuffer, {
+      this.channel.publish(msg.exchange, msg.routingKey, msg.message, {
         persistent: true,
       });
-
     } catch (error) {
-      this.storeMessageLocally(routingKey, message);
-      // this.connectWithRetry(null, 0);
+      this.localQueue.push(msg);
+
+      console.log(
+        `Mensagem armazenada localmente. Tamanho da fila local: ${this.localQueue.length}`,
+      );
     }
   }
 
@@ -58,19 +61,41 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
       });
 
       this.channel = await this.connection.createChannel();
-      await this.channel.assertExchange(this.exchangeName, this.exchangeType, { durable: true });
 
-      console.log(`Conexão com RabbitMQ estabelecida. Exchange "${this.exchangeName}" configurada.`);
+      exchangeList.forEach(async (ex) => {
+        await this.createExchange(ex);
+      });
 
       this.processLocalQueue();
     } catch (error) {
       console.error(`Erro ao conectar ao RabbitMQ: ${error.message}`);
       if (attempt < maxRetries) {
         console.log(`Tentando reconectar em ${retryInterval / 1000}s...`);
-        setTimeout(() => this.connectWithRetry(retryInterval, maxRetries, attempt + 1), retryInterval);
+        setTimeout(
+          () => this.connectWithRetry(retryInterval, maxRetries, attempt + 1),
+          retryInterval,
+        );
       } else {
-        console.error('Número máximo de tentativas de reconexão atingido. Abortando...');
+        console.error(
+          'Número máximo de tentativas de reconexão atingido. Abortando...',
+        );
       }
+    }
+  }
+
+  private async createExchange(exchange: IExchange) {
+    try {
+      await this.channel.assertExchange(exchange.name, exchange.type, {
+        durable: exchange.durable,
+      });
+
+      console.log(
+        `Conexão com RabbitMQ estabelecida. Exchange "${exchange.name}" configurada.`,
+      );
+    } catch (error) {
+      console.error(
+        `Erro ao criar a exchange "${exchange.name}": ${error.message}`,
+      );
     }
   }
 
@@ -81,27 +106,30 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     setTimeout(() => this.connectWithRetry(retryInterval), retryInterval);
   }
 
-  private async storeMessageLocally(routingKey: string, message: any) {
-    this.localQueue.push({ routingKey, message });
-    console.log(`Mensagem armazenada localmente. Tamanho da fila local: ${this.localQueue.length}`);
-  }
-
   private async processLocalQueue() {
     while (this.localQueue.length > 0) {
-      const { routingKey, message } = this.localQueue.shift();
+      const { exchange, routingKey, message } = this.localQueue.shift();
       try {
-        await this.publishMessage({routingKey, message});
+        await this.publishMessage({
+          exchange,
+          routingKey,
+          message,
+        });
 
         if (!this.localQueue.length) {
-          console.log("Todas as mensagens armazenadas localmente foram enfileiradas");
+          console.log(
+            'Todas as mensagens armazenadas localmente foram enfileiradas',
+          );
         }
       } catch (error) {
-        console.error('Erro ao processar mensagem da fila local:', error.message);
+        console.error(
+          'Erro ao processar mensagem da fila local:',
+          error.message,
+        );
 
-        this.localQueue.unshift({ routingKey, message });
+        this.localQueue.unshift({ exchange, routingKey, message });
         break;
       }
     }
-
   }
 }

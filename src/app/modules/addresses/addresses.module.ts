@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AddressesController } from './addresses.controller';
-import { JwtService } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { PrismaAddressRepository } from '@/infra/database/Prisma/repositories/prisma-address.repository';
 import { AddressRepository } from '@/app/repositories/address.repository';
@@ -14,7 +13,6 @@ import { RemoveAddressUseCase } from './usecases/remove-address.usecase';
   imports: [UsersModule],
   controllers: [AddressesController],
   providers: [
-    JwtService,
     CreateAddressUseCase,
     FindAllAddressesUseCase,
     FindByIdAddressUseCase,

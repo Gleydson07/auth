@@ -1,9 +1,7 @@
 import { ProvisionalPasswordRepository } from '@/app/repositories/provisional-password.repository';
 import { UserRepository } from '@/app/repositories/user.repository';
-import { SendMailDto } from '@/infra/services/mailer/dto/send-mail.dto';
-import { MailerService } from '@/infra/services/mailer/mailer.service';
-import { templateRecoveryPassword } from '@/infra/services/mailer/templates/recovery-password';
-import { templateFormatter } from '@/infra/services/mailer/utils/replacer';
+import { exRecoveryPassword } from '@/infra/services/rabbitmq/config/channels';
+import { IPublishMessage } from '@/infra/services/rabbitmq/dto/publish-message.dto';
 import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
 import { generateProvisionalPasswordHash } from '@/utils/functions/generateProvisionalPasswordHash';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -15,8 +13,7 @@ export class SendMailToRecoveryPasswordUseCase {
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
     private readonly provisionalPasswordRepository: ProvisionalPasswordRepository,
-    private readonly mailerService: MailerService,
-    private readonly rabbitmqService: RabbitmqService,
+    // private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async execute(email: string) {
@@ -53,30 +50,22 @@ export class SendMailToRecoveryPasswordUseCase {
         mailReplacements.hashProvisional,
       );
 
-      if (this.configService.get<boolean>('MAIL_SEND_FROM_QUEUE')) {
-        this.rabbitmqService.publishMessage({
-          routingKey: 'email',
-          message: {
-            ...mailReplacements,
-            recipients: user?.email,
-          },
-        });
-      } else {
-        const userSender = this.configService.get<string>(
-          'MAIL_DEFAULT_SENDER',
-        );
-        const mailProps: SendMailDto = {
-          from: `"${mailReplacements.companyName}" <${userSender}>`,
-          recipients: user.email,
-          subject: 'Recuperação de senha',
-          text: '/nOlá!/n Siga as orientações abaixo para recuperar sua senha:',
-          html: mailReplacements
-            ? templateFormatter(templateRecoveryPassword, mailReplacements)
-            : templateRecoveryPassword,
-        };
+      const publishMessage: IPublishMessage = {
+        exchange: exRecoveryPassword.name,
+        routingKey: exRecoveryPassword.routingKey.email,
+        message: Buffer.from(
+          JSON.stringify({
+            senderId: user.id,
+            title: 'Recuperação de Senha',
+            content: {
+              ...mailReplacements,
+              recipients: user?.email,
+            },
+          }),
+        ),
+      };
 
-        this.mailerService.sendMail(mailProps);
-      }
+      // this.rabbitmqService.publishMessage(publishMessage);
     } catch (error) {
       throw new HttpException(
         error?.message || 'Falha ao solicitar email de recuperação de senha!',

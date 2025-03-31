@@ -18,9 +18,9 @@ import { BlackListRepository } from '@/app/repositories/black-list.repository';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private reflector: Reflector,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private reflector: Reflector,
     private blackListRepository: BlackListRepository,
   ) {}
 

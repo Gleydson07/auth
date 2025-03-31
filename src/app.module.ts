@@ -9,7 +9,6 @@ import { DatabaseModule } from './infra/database/database.module';
 import { BlackListModule } from './app/modules/black-list/black-list.module';
 import { ProfilesModule } from './app/modules/profiles/profiles.module';
 import { AddressesModule } from './app/modules/addresses/addresses.module';
-import { MailerModule } from './infra/services/mailer/mailer.module';
 import { ScheduledTasksModule } from './infra/services/scheduled-tasks/scheduled-tasks.module';
 import { join } from 'path';
 import { RabbitmqModule } from './infra/services/rabbitmq/rabbitmq.module';
@@ -20,6 +19,7 @@ import { UsersModule } from './app/modules/users/users.module';
 import { AuthGuard } from './app/modules/auth/guards/auth.guard';
 import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';
 import { ProvisionalPasswordModule } from './app/modules/provisional-password/provisional-password.module';
+import { JwtModule } from '@nestjs/jwt';
 
 const env = dotenv.config();
 dotenvExpand.expand(env);
@@ -32,6 +32,9 @@ export const prefix = 'ms-auth/api/v1';
       isGlobal: true,
       envFilePath: '.env',
       load: [() => env.parsed],
+    }),
+    JwtModule.register({
+      global: true,
     }),
     ThrottlerModule.forRoot({
       errorMessage: 'Número máximo de requisições atingido.',
@@ -65,7 +68,7 @@ export const prefix = 'ms-auth/api/v1';
       debug: true,
     }),
     ScheduleModule.forRoot(),
-    RabbitmqModule,
+    // RabbitmqModule,
     DatabaseModule,
     AuthModule,
     UsersModule,
@@ -73,7 +76,6 @@ export const prefix = 'ms-auth/api/v1';
     ProfilesModule,
     ProvisionalPasswordModule,
     AddressesModule,
-    MailerModule,
     ScheduledTasksModule,
     RouterModule.register([
       { path: `${prefix}/auth`, module: AuthModule },
@@ -85,7 +87,7 @@ export const prefix = 'ms-auth/api/v1';
           { path: `/:id/addresses`, module: AddressesModule },
         ],
       },
-      { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
+      // { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
     ]),
   ],
   providers: [

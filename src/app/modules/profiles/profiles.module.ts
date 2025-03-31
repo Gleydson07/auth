@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ProfilesController } from './profiles.controller';
-import { JwtService } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { PrismaProfileRepository } from '@/infra/database/Prisma/repositories/prisma-profile.repository';
 import { ProfileRepository } from '@/app/repositories/profile.repository';
@@ -13,7 +12,6 @@ import { UpdateProfileUseCase } from './usecases/update-profile.usecase';
   imports: [UsersModule],
   controllers: [ProfilesController],
   providers: [
-    JwtService,
     CreateProfileUseCase,
     FindByUserIdProfileUseCase,
     RemoveProfileUseCase,
