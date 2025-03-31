@@ -1,5 +1,6 @@
 import { ProvisionalPasswordRepository } from '@/app/repositories/provisional-password.repository';
 import { UserRepository } from '@/app/repositories/user.repository';
+import { EventBusService } from '@/infra/events/event-bus.service';
 import { exRecoveryPassword } from '@/infra/services/rabbitmq/config/channels';
 import { IPublishMessage } from '@/infra/services/rabbitmq/dto/publish-message.dto';
 import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
@@ -12,8 +13,9 @@ export class SendMailToRecoveryPasswordUseCase {
   constructor(
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
-    private readonly provisionalPasswordRepository: ProvisionalPasswordRepository,
-    // private readonly rabbitmqService: RabbitmqService,
+    // private readonly provisionalPasswordRepository: ProvisionalPasswordRepository,
+    private readonly rabbitmqService: RabbitmqService,
+    private readonly eventBus: EventBusService,
   ) {}
 
   async execute(email: string) {
@@ -45,10 +47,10 @@ export class SendMailToRecoveryPasswordUseCase {
         headerImage: this.configService.get<string>('MAIL_HEADER_IMAGE'),
       };
 
-      await this.provisionalPasswordRepository.generateProvisionalPassword(
-        user.id,
-        mailReplacements.hashProvisional,
-      );
+      this.eventBus.publish('provisionalPassword.generate', {
+        userId: user.id,
+        hash: mailReplacements.hashProvisional,
+      });
 
       const publishMessage: IPublishMessage = {
         exchange: exRecoveryPassword.name,
@@ -65,7 +67,7 @@ export class SendMailToRecoveryPasswordUseCase {
         ),
       };
 
-      // this.rabbitmqService.publishMessage(publishMessage);
+      this.rabbitmqService.publishMessage(publishMessage);
     } catch (error) {
       throw new HttpException(
         error?.message || 'Falha ao solicitar email de recuperação de senha!',

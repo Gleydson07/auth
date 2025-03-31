@@ -4,13 +4,13 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { IPublishMessage } from '@/infra/services/rabbitmq/dto/publish-message.dto';
 import { exUser } from '@/infra/services/rabbitmq/config/channels';
-// import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
+import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
 
 @Injectable()
 export class CreateUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    // private readonly rabbitmqService: RabbitmqService,
+    private readonly rabbitmqService: RabbitmqService,
   ) {}
 
   async execute(data: CreateUserDto) {
@@ -46,7 +46,7 @@ export class CreateUserUseCase {
         ),
       };
 
-      // this.rabbitmqService.publishMessage(publishMessage);
+      this.rabbitmqService.publishMessage(publishMessage);
 
       return response;
     } catch (error) {

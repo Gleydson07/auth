@@ -16,8 +16,8 @@ import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { UsersModule } from './app/modules/users/users.module';
-import { AuthGuard } from './app/modules/auth/guards/auth.guard';
-import { GraphQLThrottlerGuard } from './app/modules/auth/guards/graphql-throttler.guard';
+import { AuthGuard } from './infra/auth/guards/auth.guard';
+import { GraphQLThrottlerGuard } from './infra/auth/guards/graphql-throttler.guard';
 import { ProvisionalPasswordModule } from './app/modules/provisional-password/provisional-password.module';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -68,7 +68,7 @@ export const prefix = 'ms-auth/api/v1';
       debug: true,
     }),
     ScheduleModule.forRoot(),
-    // RabbitmqModule,
+    RabbitmqModule,
     DatabaseModule,
     AuthModule,
     UsersModule,

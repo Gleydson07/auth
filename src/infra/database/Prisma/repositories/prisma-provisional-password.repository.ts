@@ -4,20 +4,37 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  OnModuleInit,
 } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/Prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { SALT } from '@/app/repositories/user.repository';
 import { ProvisionalPasswordRepository } from '@/app/repositories/provisional-password.repository';
+import { EventBusService } from '@/infra/events/event-bus.service';
 
 @Injectable()
 export class PrismaProvisionalPasswordRepository
-  implements ProvisionalPasswordRepository
+  implements ProvisionalPasswordRepository, OnModuleInit
 {
   constructor(
     private readonly prismaService: PrismaService,
     private configService: ConfigService,
+    private readonly eventBus: EventBusService,
   ) {}
+
+  onModuleInit() {
+    this.eventBus.subscribe(
+      'provisionalPassword.generate',
+      this.handleGenerateProvesionalPassword.bind(this),
+    );
+  }
+
+  private async handleGenerateProvesionalPassword(data: {
+    userId: number;
+    hash: string;
+  }) {
+    await this.generateProvisionalPassword(data.userId, data.hash);
+  }
 
   async findPasswordAndProvisionalPasswordByEmail(email: string) {
     return await this.prismaService.provisionalPassword.findFirst({

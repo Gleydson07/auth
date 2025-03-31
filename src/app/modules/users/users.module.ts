@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UserGraphqlResolver } from './graphQL/user.gql.resolver';
 import { ChangeUserActiveStatusUseCase } from './usecases/change-user-active-status.usecase';
@@ -11,6 +11,7 @@ import { FindAllUsersUseCase } from './usecases/find-all-users.usecase';
 import { FindUserByIdUseCase } from './usecases/find-by-id-user.usecase';
 import { UpdateUserUseCase } from './usecases/update-user.usecase';
 import { FindAllWithAggregatesUsersUseCase } from './usecases/find-all-with-aggregates-users.usecase';
+import { RabbitmqService } from '@/infra/services/rabbitmq/rabbitmq.service';
 
 @Module({
   imports: [],
@@ -25,6 +26,7 @@ import { FindAllWithAggregatesUsersUseCase } from './usecases/find-all-with-aggr
     FindAllWithAggregatesUsersUseCase,
     FindUserByIdUseCase,
     UpdateUserUseCase,
+    RabbitmqService,
     {
       provide: UserRepository,
       useClass: PrismaUserRepository,

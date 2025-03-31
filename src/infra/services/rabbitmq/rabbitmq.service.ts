@@ -37,7 +37,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.localQueue.push(msg);
 
-      console.log(
+      console.info(
         `Mensagem armazenada localmente. Tamanho da fila local: ${this.localQueue.length}`,
       );
     }
@@ -46,7 +46,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
   async connectWithRetry(retryInterval = 5000, maxRetries = 5, attempt = 0) {
     try {
       if (attempt) {
-        console.log(`Reconectando com RabbitMQ (${attempt}/${maxRetries})...`);
+        console.info(`Reconectando com RabbitMQ (${attempt}/${maxRetries})...`);
       }
       this.connection = await amqp.connect(this.url);
 
@@ -70,7 +70,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       console.error(`Erro ao conectar ao RabbitMQ: ${error.message}`);
       if (attempt < maxRetries) {
-        console.log(`Tentando reconectar em ${retryInterval / 1000}s...`);
+        console.info(`Tentando reconectar em ${retryInterval / 1000}s...`);
         setTimeout(
           () => this.connectWithRetry(retryInterval, maxRetries, attempt + 1),
           retryInterval,
@@ -89,7 +89,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
         durable: exchange.durable,
       });
 
-      console.log(
+      console.info(
         `Conexão com RabbitMQ estabelecida. Exchange "${exchange.name}" configurada.`,
       );
     } catch (error) {
@@ -117,7 +117,7 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
         });
 
         if (!this.localQueue.length) {
-          console.log(
+          console.info(
             'Todas as mensagens armazenadas localmente foram enfileiradas',
           );
         }

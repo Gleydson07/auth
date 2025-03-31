@@ -1,4 +1,3 @@
-import { BlackListRepository } from '@/app/repositories/black-list.repository';
 import {
   HttpException,
   HttpStatus,

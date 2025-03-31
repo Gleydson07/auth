@@ -12,7 +12,7 @@ import { SignInAuthDto } from './dto/sign-in.dto';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
 import { UserFromToken } from './dto/token-payload.dto';
 import { Token } from '@/utils/decorators/token-extract-auth.decorator';
-import { OnlyAdminGuard } from './guards/only-admin.guard';
+import { OnlyAdminGuard } from '../../../infra/auth/guards/only-admin.guard';
 import { RecoveryPasswordDto } from './dto/recovery-password.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { IsPublic } from '@/utils/decorators/is-public.decorator';

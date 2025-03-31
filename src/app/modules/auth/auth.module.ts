@@ -8,17 +8,15 @@ import { RevokeTokenUseCase } from './usecases/revoke-token.usecase';
 import { SendMailToRecoveryPasswordUseCase } from './usecases/send-mail-to-recovery-password.usecase';
 import { SignInUseCase } from './usecases/sign-in.usecase';
 import { UpdatePasswordUseCase } from './usecases/update-password.usecase';
+import { RabbitmqModule } from '@/infra/services/rabbitmq/rabbitmq.module';
 import { ProvisionalPasswordModule } from '../provisional-password/provisional-password.module';
-import { AuthGuard } from './guards/auth.guard';
-import { GraphQLThrottlerGuard } from './guards/graphql-throttler.guard';
-import { OnlyAdminGuard } from './guards/only-admin.guard';
 
 @Module({
   imports: [
     BlackListModule,
     UsersModule,
+    RabbitmqModule,
     ProvisionalPasswordModule,
-    // RabbitmqModule,
   ],
   providers: [
     RecoveryPasswordUseCase,
@@ -27,11 +25,8 @@ import { OnlyAdminGuard } from './guards/only-admin.guard';
     SendMailToRecoveryPasswordUseCase,
     SignInUseCase,
     UpdatePasswordUseCase,
-    AuthGuard,
-    GraphQLThrottlerGuard,
-    OnlyAdminGuard,
   ],
   controllers: [AuthController],
-  exports: [AuthGuard, GraphQLThrottlerGuard, OnlyAdminGuard],
+  exports: [],
 })
 export class AuthModule {}

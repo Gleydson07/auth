@@ -15,7 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@/utils/decorators/user-extract-auth.decorator';
 import { UserFromToken } from '@/app/modules/auth/dto/token-payload.dto';
 import { RoleEnum } from '@prisma/client';
-import { OnlyAdminGuard } from '@/app/modules/auth/guards/only-admin.guard';
+import { OnlyAdminGuard } from '@/infra/auth/guards/only-admin.guard';
 import { parseBooleanOrUndefined } from '@/utils/functions/parseBoolean';
 import { ChangeUserActiveStatusUseCase } from './usecases/change-user-active-status.usecase';
 import { ChangeUserRoleUseCase } from './usecases/change-user-role.usecase';

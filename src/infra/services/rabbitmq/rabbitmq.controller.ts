@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { RabbitmqService } from './rabbitmq.service';
-import { OnlyAdminGuard } from '@/app/modules/auth/guards/only-admin.guard';
+import { OnlyAdminGuard } from '@/infra/auth/guards/only-admin.guard';
 
 @UseGuards(OnlyAdminGuard)
 @Controller()
