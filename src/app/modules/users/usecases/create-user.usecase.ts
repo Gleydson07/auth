@@ -36,7 +36,7 @@ export class CreateUserUseCase {
 
       const publishMessage: IPublishMessage = {
         exchange: exUser.name,
-        routingKey: exUser.routingKey.email,
+        routingKey: exUser.routingKey.created,
         message: Buffer.from(
           JSON.stringify({
             senderId: result.id,

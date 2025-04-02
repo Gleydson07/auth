@@ -66,6 +66,9 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
         await this.createExchange(ex);
       });
 
+      console.info(`Conexão com RabbitMQ estabelecida.`);
+      console.table(exchangeList);
+
       this.processLocalQueue();
     } catch (error) {
       console.error(`Erro ao conectar ao RabbitMQ: ${error.message}`);
@@ -88,10 +91,6 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
       await this.channel.assertExchange(exchange.name, exchange.type, {
         durable: exchange.durable,
       });
-
-      console.info(
-        `Conexão com RabbitMQ estabelecida. Exchange "${exchange.name}" configurada.`,
-      );
     } catch (error) {
       console.error(
         `Erro ao criar a exchange "${exchange.name}": ${error.message}`,

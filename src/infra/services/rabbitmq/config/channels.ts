@@ -15,8 +15,8 @@ export const exUser: IExchange = {
   type: 'topic',
   durable: true,
   routingKey: {
-    userCreated: 'user.created',
-    userRemoved: 'user.removed',
+    created: 'user.created',
+    removed: 'user.removed',
   },
 };
 
