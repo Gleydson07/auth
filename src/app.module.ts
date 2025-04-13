@@ -87,7 +87,7 @@ export const prefix = 'ms-auth/api/v1';
           { path: `/:id/addresses`, module: AddressesModule },
         ],
       },
-      // { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
+      { path: `${prefix}/system/rabbitmq`, module: RabbitmqModule },
     ]),
   ],
   providers: [
