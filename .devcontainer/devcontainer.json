@@ -13,6 +13,7 @@
       "settings": {}
     }
   },
+  "forwardPorts": [5000],
   "features": {
     "ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {}
   }
